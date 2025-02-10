@@ -1,0 +1,29 @@
+{% extends 'Baza/base.html' %}
+
+{% block content %}
+<h2>Login</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div>
+        {{ form.username.label_tag }}<br>
+        {{ form.username }}
+        {{ form.username.errors }}
+    </div>
+    <div>
+        {{ form.password.label_tag }}<br>
+        {{ form.password }}
+        {{ form.password.errors }}
+    </div>
+    <div>
+        <label>User Type:</label><br>
+        {% for radio in form.user_type %}
+            <div>
+                {{ radio.tag }} {{ radio.choice_label }}
+            </div>
+        {% endfor %}
+        {{ form.user_type.errors }}
+    </div>
+    <button type="submit">Login</button>
+</form>
+{% endblock %}

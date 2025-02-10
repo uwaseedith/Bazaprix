@@ -1,0 +1,27 @@
+{% extends "Baza/public_base.html" %}
+{% load static %}
+{% block content %}
+  <h2>Product Comparison</h2>
+  {% if products %}
+    <table border="1" cellspacing="0" cellpadding="5">
+      <tr>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Market</th>
+        <th>Door Number</th>
+        <th>Vendor</th>
+      </tr>
+      {% for product in products %}
+        <tr>
+          <td>{{ product.name }}</td>
+          <td>{{ product.price|floatformat:2 }} {{ product.currency }}</td>
+          <td>{{ product.market }}</td>
+          <td>{{ product.door_number }}</td>
+          <td>{{ product.vendor.business_name }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% else %}
+    <p>No products selected for comparison.</p>
+  {% endif %}
+{% endblock %}

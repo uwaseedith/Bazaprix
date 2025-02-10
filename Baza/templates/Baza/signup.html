@@ -1,0 +1,90 @@
+{% extends 'Baza/base.html' %}
+
+{% block content %}
+<h2>Sign Up</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div>
+        {{ form.username.label_tag }}<br>
+        {{ form.username }}
+        {{ form.username.errors }}
+    </div>
+    <div>
+        {{ form.full_name.label_tag }}<br>
+        {{ form.full_name }}
+        {{ form.full_name.errors }}
+    </div>
+    <div>
+        {{ form.email.label_tag }}<br>
+        {{ form.email }}
+        {{ form.email.errors }}
+    </div>
+    <div>
+        <label>User Type:</label><br>
+        {% for radio in form.user_type %}
+            <div>
+                {{ radio.tag }} {{ radio.choice_label }}
+            </div>
+        {% endfor %}
+        {{ form.user_type.errors }}
+    </div>
+    <!-- Vendor-only fields -->
+    <div id="vendor_fields" style="display: none;">
+        <div>
+            {{ form.phone_number.label_tag }}<br>
+            {{ form.phone_number }}
+            {{ form.phone_number.errors }}
+        </div>
+        <div>
+            {{ form.market.label_tag }}<br>
+            {{ form.market }}
+            {{ form.market.errors }}
+        </div>
+    </div>
+    <div>
+        {{ form.password1.label_tag }}<br>
+        {{ form.password1 }}
+        {{ form.password1.errors }}
+    </div>
+    <div>
+        {{ form.password2.label_tag }}<br>
+        {{ form.password2 }}
+        {{ form.password2.errors }}
+    </div>
+    <div>
+        {{ form.terms_accepted }} I accept the 
+        <a href="#" id="terms_link" target="_blank">Terms and Conditions</a>
+        {{ form.terms_accepted.errors }}
+    </div>
+    <button type="submit">Sign Up</button>
+</form>
+
+<script>
+    // JavaScript to toggle vendor-specific fields and update the terms link
+    function toggleVendorFields() {
+        const radios = document.getElementsByName("user_type");
+        let selectedValue = "";
+        radios.forEach(function(radio) {
+            if (radio.checked) {
+                selectedValue = radio.value;
+            }
+        });
+        const vendorFields = document.getElementById("vendor_fields");
+        const termsLink = document.getElementById("terms_link");
+        if (selectedValue === "vendor") {
+            vendorFields.style.display = "block";
+            termsLink.href = "{% url 'vendor_terms' %}";
+        } else {
+            vendorFields.style.display = "none";
+            termsLink.href = "{% url 'consumer_terms' %}";
+        }
+    }
+    // Attach event listeners to radio buttons
+    document.querySelectorAll('input[name="user_type"]').forEach(function(elem) {
+        elem.addEventListener("change", toggleVendorFields);
+    });
+    // Set initial state on page load
+    window.onload = toggleVendorFields;
+</script>
+{% endblock %}

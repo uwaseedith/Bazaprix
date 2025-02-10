@@ -1,0 +1,14 @@
+{% extends "Baza/vendor_base.html" %}
+{% load static %}
+{% block content %}
+  <h2>Search Results for "{{ query }}"</h2>
+  <ul>
+    {% for product in results %}
+      <li>
+        <a href="{% url 'product_detail' product.id %}">{{ product.name }}</a> - {{ product.price|floatformat:2 }} {{ product.currency }}
+      </li>
+    {% empty %}
+      <li>No products found.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

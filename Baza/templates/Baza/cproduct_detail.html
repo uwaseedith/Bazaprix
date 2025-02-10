@@ -1,0 +1,15 @@
+{% extends "Baza/consumer_base.html" %}
+{% load static %}
+{% block content %}
+  <h2>{{ product.name }}</h2>
+  {% if product.image %}
+    <img src="{{ product.image.url }}" alt="{{ product.name }}" width="300">
+  {% endif %}
+  <p><strong>Price:</strong> {{ product.price|floatformat:2 }} {{ product.currency }}</p>
+  <p><strong>Category:</strong> {{ product.category.name }}</p>
+  <p><strong>Market:</strong> {{ product.market }}</p>
+  <p><strong>Door Number:</strong> {{ product.door_number }}</p>
+  <p>{{ product.description }}</p>
+  <p><strong>Vendor:</strong> {{ product.vendor.business_name }}</p>
+  <p><strong>Contact:</strong> {{ product.vendor.contact_info }}</p>
+{% endblock %}

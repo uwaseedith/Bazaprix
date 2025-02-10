@@ -1,0 +1,28 @@
+{% extends "Baza/vendor_base.html" %}
+{% load static %}
+
+{% block content %}
+  <h2>Available Products</h2>
+  <ul>
+    {% for product in products %}
+      <li>
+        {% if product.image %}
+          <img src="{{ product.image.url }}" alt="{{ product.name }}" width="150">
+        {% else %}
+          <img src="{% static 'Baza/images/default.jpg' %}" alt="No image available" width="150">
+        {% endif %}
+        <br>
+        <strong>{{ product.name }}</strong> - {{ product.price }} {{ product.currency }}<br>
+        Market: {{ product.market }}<br>
+        Door Number: {{ product.door_number }}<br>
+        Vendor: {{ product.vendor.business_name }}<br>
+        Contact: {{ product.vendor.contact_info }}<br>
+        <!-- New Update and Delete Options -->
+        <a href="{% url 'update_product' product.id %}">Update</a> | 
+        <a href="{% url 'delete_product' product.id %}">Delete</a>
+      </li>
+    {% empty %}
+      <li>No products available yet.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "Baza/public_base.html" %}
+{% load static %}
+{% block content %}
+  <h2>Price Comparison for {{ product.name }}</h2>
+  <table border="1" cellspacing="0" cellpadding="5">
+    <tr>
+      <th>Vendor</th>
+      <th>Price</th>
+      <th>Last Updated</th>
+    </tr>
+    {% for update in price_updates %}
+      <tr>
+        <td>{{ update.vendor.business_name }}</td>
+        <td>{{ update.price|floatformat:2 }} {{ product.currency }}</td>
+        <td>{{ update.timestamp|date:"SHORT_DATETIME_FORMAT" }}</td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td colspan="3">No price updates available.</td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endblock %}

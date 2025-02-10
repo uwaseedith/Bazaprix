@@ -1,0 +1,54 @@
+{% extends 'Baza/vendor_base.html' %}
+
+{% block content %}
+
+
+<section>
+  <h2>Notifications</h2>
+  <ul>
+    {% for note in notifications %}
+      <li>
+         {{ note.message }}<br>
+         <small>{{ note.created_at|date:"SHORT_DATETIME_FORMAT" }}</small>
+         <form method="post" action="{% url 'mark_notification_seen' note.id %}">
+           {% csrf_token %}
+           <button type="submit">Mark seen</button>
+         </form>
+      </li>
+    {% empty %}
+      <li>No new notifications.</li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section>
+  <h2>Price Updates</h2>
+  <ul>
+    {% for alert in price_updates %}
+      <li>
+         <strong>{{ alert.product.name }}</strong> price was updated and has {{ alert.change_type }}  <br>
+         <small>{{ alert.created_at|date:"SHORT_DATETIME_FORMAT" }}</small>
+         <form method="post" action="{% url 'mark_vendor_alert_seen' alert.id %}">
+          {% csrf_token %}
+          <button type="submit">Mark seen</button>
+        </form>
+      </li>
+    {% empty %}
+      <li>No price updates.</li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section>
+  <h2>Product Listings</h2>
+  <ul>
+    {% for product in products %}
+      <li>
+        <strong>{{ product.name }}</strong>: {{ product.price }} {{ product.currency }}
+      </li>
+    {% empty %}
+      <li>No products listed yet.</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}

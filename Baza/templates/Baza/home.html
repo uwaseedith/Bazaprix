@@ -1,0 +1,10 @@
+{% extends 'Baza/base.html' %}
+
+{% block content %}
+  <h2>Welcome to BazaPrix!</h2>
+  <p>Your one-stop platform for comparing prices on essential goods.</p>
+  <p>
+    If you're interested in exploring our services, please 
+    <a href="{% url 'signup' %}">Sign Up</a> or <a href="{% url 'login' %}">Login</a>.
+  </p>
+{% endblock %}

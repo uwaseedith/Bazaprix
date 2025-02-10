@@ -1,0 +1,14 @@
+{% extends 'Baza/base.html' %}
+
+{% block content %}
+<h2>Search Results for "{{ query }}"</h2>
+<ul>
+    {% for product in products %}
+    <li>
+        <a href="{% url 'product_detail' product.pk %}">{{ product.name }}</a>
+    </li>
+    {% empty %}
+    <li>No products found.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

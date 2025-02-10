@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BazaPrix - Consumer Dashboard</title>
+  <link rel="stylesheet" href="{% static 'Baza/css/styles.css' %}">
+</head>
+<body>
+  <header>
+    <header>
+      <div class="header-top">
+        <h1>BazaPrix</h1>
+        <nav class="nav-links">
+          
+        <a href="{% url 'consumer_dashboard' %}">Dashboard</a>
+        <a href="{% url 'consumer_profile' %}">Profile</a>
+        <a href="{% url 'cproduct_list' %}">Product List</a>
+        <a href="{% url 'vendor_list' %}">Vendors</a>
+        <a href="{% url 'login' %}">Logout</a>
+        </nav>
+      </div>
+    
+  
+    
+    <div class="header-bottom">
+      <form class="search-form" action="{% url 'cproduct_search' %}" method="get">
+        <input type="search" placeholder="Search products..." aria-label="Search" name="q">
+        <button type="submit">Search</button>
+      </form>
+    </div>
+  </header>
+  <main>
+    {% block content %}
+    {% endblock %}
+  </main>
+</body>
+</html>

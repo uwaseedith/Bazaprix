@@ -1,0 +1,27 @@
+{% extends "Baza/base.html" %}
+{% load static %}
+
+{% block content %}
+  <h2>Vendor Profile: {{ vendor.business_name }}</h2>
+  
+  <div>
+    <p><strong>Market (Where they work):</strong> {{ vendor.location }}</p>
+    <p><strong>Contact Info:</strong> {{ vendor.contact_info }}</p>
+  </div>
+  
+  <div>
+    <h3>Feedbacks</h3>
+    <ul>
+      {% for feedback in vendor.feedbacks.all %}
+        <li>
+          <strong>{{ feedback.author }}</strong> rated {{ feedback.rating }}/5<br>
+          {{ feedback.comment }}
+        </li>
+      {% empty %}
+        <li>No feedback available yet.</li>
+      {% endfor %}
+    </ul>
+  </div>
+  
+  <p><a href="{% url 'vendor_list' %}">Back to Vendor List</a></p>
+{% endblock %}

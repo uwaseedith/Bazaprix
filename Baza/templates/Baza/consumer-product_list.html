@@ -1,0 +1,32 @@
+{% extends "Baza/consumer_base.html" %}
+{% load static %}
+
+{% block content %}
+  <h2>Products</h2>
+  <ul>
+    {% for product in products %}
+      <li>
+        {% if product.image %}
+          <img src="{{ product.image.url }}" alt="{{ product.name }}" width="150">
+        {% else %}
+          <img src="{% static 'Baza/images/default.jpg' %}" alt="No image available" width="150">
+        {% endif %}
+        <br>
+        <strong>{{ product.name }}</strong> - {{ product.price }} {{ product.currency }}<br>
+        Market: {{ product.market }}<br>
+        Door Number: {{ product.door_number }}<br>
+        Vendor: 
+          <a href="{% url 'rate_vendor' vendor_id=product.vendor.id %}">
+            {{ product.vendor.business_name }}
+          </a><br>
+        Contact: {{ product.vendor.contact_info }}<br>
+        <form method="post" action="{% url 'save_product' product.id %}">
+          {% csrf_token %}
+          <button type="submit">Save Product</button>
+       </form>
+      </li>
+    {% empty %}
+      <li>No products available yet.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

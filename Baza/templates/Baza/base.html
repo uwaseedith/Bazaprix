@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BazaPrix</title>
+  <link rel="stylesheet" href="{% static 'Baza/css/styles.css' %}">
+</head>
+<body>
+  <header>
+    <div class="header-top">
+      <h1>BazaPrix</h1>
+      <nav class="nav-links">
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'about_us' %}">About Us</a>
+        <a href="{% url 'contact_us' %}">Contact Us</a>
+        <a href="{% url 'faq' %}">FAQ</a>
+        <!-- Add additional navigation links as needed -->
+      </nav>
+    </div>
+  </header>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+  <footer>
+    <p>&copy; 2025 BazaPrix. All rights reserved.</p>
+  </footer>
+</body>
+</html>
