@@ -213,7 +213,7 @@ CMD ["gunicorn", "yourproject.wsgi:application", "--bind", "0.0.0.0:8000"]
 ---
 
 ### 6. Video Link
-**Link:**https://youtu.be/Ldb5UkxVfRM
+**Link:** https://youtu.be/Ldb5UkxVfRM
 
 ---
 
