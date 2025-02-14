@@ -1,5 +1,6 @@
 {% extends "Baza/vendor_base.html" %}
 {% load static %}
+{% load custom_filters %}
 
 {% block content %}
 <h2>Vendor Profile</h2>
@@ -15,7 +16,15 @@
   <ul>
     {% for feedback in vendor.feedbacks.all %}
       <li>
-        <strong>{{ feedback.author }}</strong> rated {{ feedback.rating }}/5<br>
+        <strong>Anonymous User</strong> rated 
+        {% for i in 5|range_filter %}
+          {% if i < feedback.rating %}
+            <span class="filled-star">⭐</span>  <!-- Filled star -->
+          {% else %}
+            <span class="empty-star">☆</span>  <!-- Empty star -->
+          {% endif %}
+        {% endfor %}
+        <br>
         {{ feedback.comment }}
       </li>
     {% empty %}
@@ -24,5 +33,4 @@
   </ul>
 </div>
 
-<p><a href="{% url 'vendor_dashboard' %}">Back to Dashboard</a></p>
 {% endblock %}

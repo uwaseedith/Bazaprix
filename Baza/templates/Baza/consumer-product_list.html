@@ -2,31 +2,46 @@
 {% load static %}
 
 {% block content %}
-  <h2>Products</h2>
-  <ul>
-    {% for product in products %}
-      <li>
-        {% if product.image %}
-          <img src="{{ product.image.url }}" alt="{{ product.name }}" width="150">
-        {% else %}
-          <img src="{% static 'Baza/images/default.jpg' %}" alt="No image available" width="150">
-        {% endif %}
-        <br>
-        <strong>{{ product.name }}</strong> - {{ product.price }} {{ product.currency }}<br>
-        Market: {{ product.market }}<br>
-        Door Number: {{ product.door_number }}<br>
-        Vendor: 
-          <a href="{% url 'rate_vendor' vendor_id=product.vendor.id %}">
+<h2>Available Products</h2>
+<div class="product-grid">
+  {% for product in products %}
+    <div class="card">
+      <!-- Display product image -->
+      {% if product.image %}
+        <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+      {% else %}
+        <img src="{% static 'Baza/images/default.jpg' %}" class="card-img-top" alt="No image available">
+      {% endif %}
+      
+      <div class="card-body">
+        <!-- Product name -->
+        <h5 class="card-title">{{ product.name }}</h5>
+        
+        <!-- Product details -->
+        <p class="card-text">
+          <strong>Price:</strong> {{ product.price }} {{ product.currency }}<br>
+          <strong>Market:</strong> {{ product.market }}<br>
+          <strong>Door Number:</strong> {{ product.door_number }}<br>
+          <strong>Vendor:</strong> <a href="{% url 'rate_vendor' vendor_id=product.vendor.id %}">
             {{ product.vendor.business_name }}
           </a><br>
-        Contact: {{ product.vendor.contact_info }}<br>
+          <strong>Contact:</strong> {{ product.vendor.contact_info }}
+        </p>
+      </div>
+      
+      <div class="card-footer text-center">
+        <!-- Save product button -->
         <form method="post" action="{% url 'save_product' product.id %}">
           {% csrf_token %}
-          <button type="submit">Save Product</button>
-       </form>
-      </li>
-    {% empty %}
-      <li>No products available yet.</li>
-    {% endfor %}
-  </ul>
+          <button type="submit" class="btn btn-primary btn-block">Save Product</button>
+        </form>
+      </div>
+    </div>
+  {% empty %}
+    <!-- Message when no products are available -->
+    <div class="col-12">
+      <p class="text-center">No products available yet.</p>
+    </div>
+  {% endfor %}
+</div>
 {% endblock %}

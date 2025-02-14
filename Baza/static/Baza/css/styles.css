@@ -1,3 +1,4 @@
+
 /* Base styles for header */
 header {
     background-color: #f8f9fa;
@@ -17,6 +18,7 @@ header {
     margin: 0;
     font-size: 2em;
     font-weight: bold;
+    color: #007bff;
 }
 
 /* Navigation links styling: placed on the right */
@@ -29,9 +31,11 @@ header {
     text-decoration: none;
     color: #0e0d0d;
     font-size: 1em;
+    font-weight: 500;
 }
 .nav-links a:hover {
     text-decoration: underline;
+    color: #007bff;
 }
 
 /* Header bottom: search bar container */
@@ -79,3 +83,171 @@ footer {
     border-top: 1px solid #141414;
     margin-top: 20px;
 }
+
+/* Grid container for product cards */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);  /* Two cards per row */
+    gap: 15px;
+    margin: 20px 0;
+}
+
+/* Card styling */
+.card {
+    background: #527aca;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Card image: fixed size, smaller images */
+.card-img-top {
+    width: 100%;
+    height: 150px;  /* Reduce height of images */
+    object-fit: cover;
+}
+
+/* Card body: spacing and flexible growth */
+.card-body {
+    padding: 10px;
+    flex-grow: 1;
+}
+
+/* Card title and text styling */
+.card-title {
+    margin: 0 0 8px;
+    font-size: 1.1em;
+}
+
+.card-text {
+    font-size: 0.9em;
+    color: #555;
+}
+
+/* Card footer: background and center alignment */
+.card-footer {
+    padding: 8px 10px;
+    background-color: #5e8fc0;
+    text-align: center;
+}
+
+/* Optional: Add hover effect for better user interaction */
+.card:hover {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Button styling */
+.btn {
+    padding: 5px 10px;
+    text-decoration: none;
+    border-radius: 3px;
+    font-size: 0.85em;
+    display: inline-block;
+    margin: 2px;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: #fff;
+    border: 1px solid #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: #fff;
+    border: 1px solid #dc3545;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+/* Button style (if not using Bootstrap, adjust accordingly) */
+.btn-update {
+    background: linear-gradient(135deg, #6DD5FA, #2980B9);
+    color: #fff;
+    border: none;
+}
+
+.btn-update:hover {
+    background: linear-gradient(135deg, #2980B9, #6DD5FA);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.btn-delete {
+    background: linear-gradient(135deg, #FF6B6B, #C0392B);
+    color: #fff;
+    border: none;
+}
+
+.btn-delete:hover {
+    background: linear-gradient(135deg, #C0392B, #FF6B6B);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.filled-star {
+    color: #f39c12;  /* Gold color for filled stars */
+}
+
+.empty-star {
+    color: #ccc;  /* Light gray for unfilled stars */
+}
+
+/* Adjust layout for smaller screens */
+@media (max-width: 599px) {
+    .product-grid {
+        grid-template-columns: 1fr;  /* One card per row on smaller screens */
+    }
+}
+
+
+/* Styling for Price Alerts */
+.alert-list {
+    margin: 20px 0;
+}
+
+.alert-card {
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.alert-card form {
+    margin-top: 10px;
+}
+
+.alert-card .btn {
+    padding: 8px 15px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+}
+
+.alert-card .btn:hover {
+    background-color: #0056b3;
+}
+
+/* Styling for Suggested Price */
+.suggested-price-list {
+    margin: 20px 0;
+}
+
+.suggested-price-card {
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+

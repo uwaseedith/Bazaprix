@@ -2,27 +2,34 @@
 {% load static %}
 
 {% block content %}
-  <h2>Available Products</h2>
-  <ul>
-    {% for product in products %}
-      <li>
-        {% if product.image %}
-          <img src="{{ product.image.url }}" alt="{{ product.name }}" width="150">
-        {% else %}
-          <img src="{% static 'Baza/images/default.jpg' %}" alt="No image available" width="150">
-        {% endif %}
-        <br>
-        <strong>{{ product.name }}</strong> - {{ product.price }} {{ product.currency }}<br>
-        Market: {{ product.market }}<br>
-        Door Number: {{ product.door_number }}<br>
-        Vendor: {{ product.vendor.business_name }}<br>
-        Contact: {{ product.vendor.contact_info }}<br>
-        <!-- New Update and Delete Options -->
-        <a href="{% url 'update_product' product.id %}">Update</a> | 
-        <a href="{% url 'delete_product' product.id %}">Delete</a>
-      </li>
-    {% empty %}
-      <li>No products available yet.</li>
-    {% endfor %}
-  </ul>
+<h2>Available Products</h2>
+<div class="product-grid">
+  {% for product in products %}
+    <div class="card">
+      {% if product.image %}
+        <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+      {% else %}
+        <img src="{% static 'Baza/images/default.jpg' %}" class="card-img-top" alt="No image available">
+      {% endif %}
+      <div class="card-body">
+        <h5 class="card-title">{{ product.name }}</h5>
+        <p class="card-text">
+          <strong>Price:</strong> {{ product.price }} {{ product.currency }}<br>
+          <strong>Market:</strong> {{ product.market }}<br>
+          <strong>Door Number:</strong> {{ product.door_number }}<br>
+          <strong>Vendor:</strong> {{ product.vendor.business_name }}<br>
+          <strong>Contact:</strong> {{ product.vendor.contact_info }}
+        </p>
+      </div>
+      <div class="card-footer text-center">
+        <a href="{% url 'update_product' product.id %}" class="btn btn-update">Update</a>
+        <a href="{% url 'delete_product' product.id %}" class="btn btn-delete">Delete</a>
+      </div>
+    </div>
+  {% empty %}
+    <div class="col-12">
+      <p>No products available yet.</p>
+    </div>
+  {% endfor %}
+</div>
 {% endblock %}

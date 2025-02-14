@@ -4,57 +4,55 @@
 
 <section>
   <h2>Price Alerts</h2>
-  <ul>
+  <div class="alert-list">
     {% for alert in price_alerts %}
-      <li>
+      <div class="alert-card">
         <strong>{{ alert.product.name }}</strong> suggested price has {{ alert.change_type }} by {{ alert.change_amount|floatformat:2 }} (from {{ alert.previous_price }} to {{ alert.new_price }})<br>
-         <small>{{ alert.created_at|date:"SHORT_DATETIME_FORMAT" }}</small>
-         <form method="post" action="{% url 'mark_alert_seen' alert.id %}">
+        <small>{{ alert.created_at|date:"SHORT_DATETIME_FORMAT" }}</small>
+        <form method="post" action="{% url 'mark_alert_seen' alert.id %}">
           {% csrf_token %}
-          <button type="submit">Mark seen</button>
+          <button type="submit" class="btn btn-primary">Mark seen</button>
         </form>
-      </li>
+      </div>
     {% empty %}
-      <li>No price alerts.</li>
+      <p>No price alerts.</p>
     {% endfor %}
-  </ul>
+  </div>
 </section>
 
 <section>
   <h2>Suggested Price</h2>
-  <ul>
+  <div class="suggested-price-list">
     {% for saved in saved_products %}
-      <li>
+      <div class="suggested-price-card">
          <strong>{{ saved.product.name }}</strong>: 
          Suggested Price: 
          {% with preferred=saved.product.get_preferred_price %}
            {{ preferred|floatformat:2 }} {{ saved.product.currency }}
          {% endwith %}
          <small>(Based on the average of all listings)</small>
-      </li>
+      </div>
     {% empty %}
-      <li>No preferred prices available.</li>
+      <p>No preferred prices available.</p>
     {% endfor %}
-  </ul>
+  </div>
 </section>
 
 <section>
   <h2>Saved Products</h2>
-  <div class="row">
+  <div class="product-grid">
     {% for saved in saved_products %}
-      <div class="col-md-4 col-sm-6 mb-3">
-        <div class="card h-100">
-          <a href="{% url 'cproduct_list' %}">
-            {% if saved.product.image %}
-              <img src="{{ saved.product.image.url }}" class="card-img-top img-fluid" alt="{{ saved.product.name }}" style="max-height:200px; object-fit:cover;">
-            {% else %}
-              <img src="{% static 'Baza/images/default.jpg' %}" class="card-img-top img-fluid" alt="No image available" style="max-height:200px; object-fit:cover;">
-            {% endif %}
-          </a>
-          <div class="card-body">
-            <h5 class="card-title">{{ saved.product.name }}</h5>
-            <p class="card-text">{{ saved.product.description|truncatewords:10 }}</p>
-          </div>
+      <div class="card">
+        <a href="{% url 'cproduct_list' %}">
+          {% if saved.product.image %}
+            <img src="{{ saved.product.image.url }}" class="card-img-top img-fluid" alt="{{ saved.product.name }}" style="max-height:200px; object-fit:cover;">
+          {% else %}
+            <img src="{% static 'Baza/images/default.jpg' %}" class="card-img-top img-fluid" alt="No image available" style="max-height:200px; object-fit:cover;">
+          {% endif %}
+        </a>
+        <div class="card-body">
+          <h5 class="card-title">{{ saved.product.name }}</h5>
+          <p class="card-text">{{ saved.product.description|truncatewords:10 }}</p>
         </div>
       </div>
     {% empty %}
