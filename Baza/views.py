@@ -23,7 +23,6 @@ def home(request):
 
 @login_required
 def vendor_profile(request):
-    # Only vendors should access this page.
     if not hasattr(request.user, 'vendor'):
         return redirect('consumer_dashboard')
     vendor = request.user.vendor
@@ -31,7 +30,6 @@ def vendor_profile(request):
 
 @login_required
 def consumer_profile(request):
-    # If the user has a vendor profile, you may choose to redirect them.
     if hasattr(request.user, 'vendor'):
         return redirect('vendor_profile')
     return render(request, 'Baza/consumer_profile.html')
@@ -55,33 +53,27 @@ def search(request):
 
 
 def home(request):
-    # Your home view (example)
     return render(request, 'Baza/home.html')
 
 def signup(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            # Create the user (without saving immediately so we can add extra fields)
             user = form.save(commit=False)
             user.email = form.cleaned_data.get('email')
             full_name = form.cleaned_data.get('full_name')
-            # For demonstration, we store the full name split into first and last names.
             names = full_name.split(' ', 1)
             user.first_name = names[0]
             if len(names) > 1:
                 user.last_name = names[1]
             user.save()
             
-            # Check if the user registered as a vendor
             user_type = form.cleaned_data.get('user_type')
             if user_type == 'vendor':
                 phone_number = form.cleaned_data.get('phone_number')
                 market = form.cleaned_data.get('market')
-                # Create a Vendor profile; here we use full name as the business name.
                 Vendor.objects.create(user=user, business_name=full_name, location=market, contact_info=phone_number)
             
-            # Log in the user and redirect (you can customize the redirection)
             login(request, user)
             return redirect('home')
     else:
@@ -90,7 +82,7 @@ def signup(request):
 
 class CustomLoginView(LoginView):
     authentication_form = CustomAuthenticationForm
-    template_name = 'Baza/login.html'  # Adjust path if needed
+    template_name = 'Baza/login.html'  
 
     def get_success_url(self):
         """
@@ -104,7 +96,7 @@ class CustomLoginView(LoginView):
         else:
             return reverse_lazy('consumer_dashboard')
         
-# Terms and Conditions views
+
 def consumer_terms(request):
     return render(request, 'Baza/consumer_terms.html')
 
@@ -114,15 +106,12 @@ def vendor_terms(request):
 
 @login_required
 def vendor_dashboard(request):
-    # Only vendors should access this dashboard.
     if not hasattr(request.user, 'vendor'):
-        # Optionally, redirect a non-vendor user to their consumer dashboard or home.
         return redirect('consumer_dashboard')
     
     vendor = request.user.vendor
-    # Get all price updates made by this vendor.
+
     price_updates = PriceAlert.objects.filter(product__vendor=vendor, seen=False).order_by('-created_at')
-    # Get the list of products this vendor offers.
     products = Product.objects.filter(vendor=vendor)
     notifications = Notification.objects.filter(vendor=vendor, seen=False).order_by('-created_at')
     context = {
@@ -135,11 +124,9 @@ def vendor_dashboard(request):
 
 @login_required
 def consumer_dashboard(request):
-    # If the user has a vendor profile, you might decide to redirect them.
     if hasattr(request.user, 'vendor'):
         return redirect('vendor_dashboard')
     
-    # Retrieve consumer-specific data.
     saved_products = SavedProduct.objects.filter(user=request.user)
     price_alerts = request.user.price_alerts.filter(seen=False).order_by('-created_at')
     transactions = Transaction.objects.filter(user=request.user).order_by('-transaction_date')
@@ -152,7 +139,6 @@ def consumer_dashboard(request):
         try:
             selected_product = Product.objects.get(id=selected_product_id)
             history = PriceUpdate.objects.filter(product=selected_product).order_by('timestamp')
-            # Create lists; if there are no updates, these remain empty.
             labels = [update.timestamp.strftime("%Y-%m-%d %H:%M") for update in history]
             data = [float(update.price) for update in history]
         except Product.DoesNotExist:
@@ -170,19 +156,15 @@ def consumer_dashboard(request):
 
 @login_required
 def add_product(request):
-    # Only vendors can add products.
     if not hasattr(request.user, 'vendor'):
-        # Optionally, redirect non-vendors to the consumer dashboard or show an error.
         return redirect('consumer_dashboard')
     
     if request.method == 'POST':
         form = ProductForm(request.POST or None, request.FILES or None, initial={'vendor': request.user.vendor})
         if form.is_valid():
             product = form.save(commit=False)
-            # Set the vendor from the logged-in user.
             product.vendor = request.user.vendor
             product.save()
-            # Optionally, you can create a PriceUpdate record here if needed.
             return redirect('vendor_dashboard')
     else:
         form = ProductForm(initial={'vendor': request.user.vendor})
@@ -198,7 +180,7 @@ def cproduct_list(request):
 
 @login_required
 def update_product_price(request, product_id):
-    # Only vendors can update the price of their own product.
+    
     if not hasattr(request.user, 'vendor'):
         return redirect('consumer_dashboard')
     product = get_object_or_404(Product, id=product_id, vendor=request.user.vendor)
@@ -211,29 +193,26 @@ def update_product_price(request, product_id):
         if new_price_decimal is not None:
             product.price = new_price_decimal
             product.save()
-            # Optionally, create a PriceUpdate record here.
+            
             return redirect('vendor_dashboard')
     return render(request, 'Baza/update_product_price.html', {'product': product})
 
 @login_required
 def rate_vendor(request, vendor_id):
-    # Get the vendor instance; 404 if not found.
     vendor = get_object_or_404(Vendor, id=vendor_id)
     
     if request.method == "POST":
         form = RateVendorForm(request.POST)
         if form.is_valid():
-            # Retrieve the rating and comment from the form
             rating = form.cleaned_data['rating']
             comment = form.cleaned_data['comment']
-            # Create a new feedback record linked to the vendor.
             Feedback.objects.create(
                 vendor=vendor,
                 author=request.user.get_full_name() or request.user.username,
                 rating=rating,
                 comment=comment,
             )
-            # After rating, redirect to the vendor profile (where feedbacks are displayed)
+            
             return redirect('vendor_profile')
     else:
         form = RateVendorForm()
@@ -258,14 +237,13 @@ def vendor_detail(request, vendor_id):
 
 @login_required
 def update_product(request, product_id):
-    # Get the product and ensure the logged-in user is its vendor.
     product = get_object_or_404(Product, id=product_id, vendor=request.user.vendor)
     
     if request.method == "POST":
         form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
             form.save()
-            return redirect('vendor_dashboard')  # Or redirect to your product list page
+            return redirect('vendor_dashboard')  
     else:
         form = ProductForm(instance=product)
         
@@ -273,27 +251,24 @@ def update_product(request, product_id):
 
 @login_required
 def delete_product(request, product_id):
-    # Ensure the product belongs to the logged-in vendor.
     product = get_object_or_404(Product, id=product_id, vendor=request.user.vendor)
     
     if request.method == "POST":
         product.delete()
-        return redirect('vendor_dashboard')  # Or wherever you want to redirect after deletion
+        return redirect('vendor_dashboard')  
     
-    # Render a confirmation page if GET request.
     return render(request, 'Baza/delete_product_confirm.html', {'product': product})
 
 @login_required
 def save_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    # Check if the consumer has already saved any product with the same name (case-insensitive)
     if SavedProduct.objects.filter(user=request.user, product__name__iexact=product.name).exists():
         messages.info(request, "You have already saved a product with this name.")
     else:
         SavedProduct.objects.create(
             user=request.user,
             product=product,
-            saved_price=product.price  # save the price at the time of saving
+            saved_price=product.price  
         )
         messages.success(request, "Product saved successfully.")
     
@@ -301,7 +276,6 @@ def save_product(request, product_id):
 
 @login_required
 def mark_alert_seen(request, alert_id):
-    # Ensure the alert belongs to the logged-in user.
     alert = get_object_or_404(PriceAlert, id=alert_id, user=request.user)
     alert.seen = True
     alert.save()
@@ -309,7 +283,6 @@ def mark_alert_seen(request, alert_id):
 
 @login_required
 def mark_vendor_alert_seen(request, alert_id):
-    # Ensure the alert belongs to a product owned by the logged-in vendor.
     alert = get_object_or_404(PriceAlert, id=alert_id, product__vendor=request.user.vendor)
     alert.seen = True
     alert.save()
@@ -324,18 +297,16 @@ def price_comparison(request, product_id):
 def price_history(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     history = PriceUpdate.objects.filter(product=product).order_by('timestamp')
-    # Prepare lists of labels and price data.
     labels = [update.timestamp.strftime("%Y-%m-%d %H:%M") for update in history]
     data = [float(update.price) for update in history]
     context = {
         'product': product,
-        'labels': json.dumps(labels),  # Convert to JSON string
+        'labels': json.dumps(labels),  
         'data': json.dumps(data),
     }
     return render(request, 'Baza/price_history.html', context)
 
 def product_comparison(request):
-    # Expect query parameter 'products' with comma‑separated product IDs (e.g., ?products=1,3,5)
     product_ids_str = request.GET.get('products', '')
     if product_ids_str:
         try:

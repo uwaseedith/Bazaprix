@@ -94,7 +94,7 @@ footer {
 
 /* Card styling */
 .card {
-    background: #527aca;
+    background: #fff;
     border: 1px solid #ddd;
     border-radius: 4px;
     overflow: hidden;
@@ -130,7 +130,7 @@ footer {
 /* Card footer: background and center alignment */
 .card-footer {
     padding: 8px 10px;
-    background-color: #5e8fc0;
+    background-color:  #f8f9fa;
     text-align: center;
 }
 
