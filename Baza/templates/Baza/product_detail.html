@@ -10,6 +10,8 @@
   <p><strong>Market:</strong> {{ product.market }}</p>
   <p><strong>Door Number:</strong> {{ product.door_number }}</p>
   <p>{{ product.description }}</p>
-  <p><strong>Vendor:</strong> {{ product.vendor.business_name }}</p>
+  <strong>Vendor:</strong> 
+    {{ product.vendor.business_name }}
+<br>
   <p><strong>Contact:</strong> {{ product.vendor.contact_info }}</p>
 {% endblock %}

@@ -84,6 +84,9 @@ DATABASES = {
         'PASSWORD': 'Uwaseedith@2000',  
         'HOST': 'localhost',
         'PORT': '3306',
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+        },
     }
 }
 
@@ -131,6 +134,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'Baza', 'static')]
 
 # (Optional) For media file uploads:

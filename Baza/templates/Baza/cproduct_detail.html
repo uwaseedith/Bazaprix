@@ -10,6 +10,6 @@
   <p><strong>Market:</strong> {{ product.market }}</p>
   <p><strong>Door Number:</strong> {{ product.door_number }}</p>
   <p>{{ product.description }}</p>
-  <p><strong>Vendor:</strong> {{ product.vendor.business_name }}</p>
+  <p><strong>Vendor:</strong> <a href="{% url 'rate_vendor' vendor_id=product.vendor.id %}"> {{ product.vendor.business_name }}</a></p>
   <p><strong>Contact:</strong> {{ product.vendor.contact_info }}</p>
 {% endblock %}

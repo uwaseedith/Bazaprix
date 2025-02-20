@@ -4,4 +4,4 @@ register = template.Library()
 
 @register.filter
 def range_filter(value):
-    return range(value)
+    return range(1, value + 1)

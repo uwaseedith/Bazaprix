@@ -14,7 +14,15 @@
     <ul>
       {% for feedback in vendor.feedbacks.all %}
         <li>
-          <strong>{{ feedback.author }}</strong> rated {{ feedback.rating }}/5<br>
+          <strong>Anonymous User</strong> rated 
+          {% for i in range_of_stars %}
+            {% if i <= feedback.rating %}
+              <span class="filled-star">⭐</span>  <!-- Filled star -->
+            {% else %}
+              <span class="empty-star">☆</span>  <!-- Empty star -->
+            {% endif %}
+          {% endfor %}
+          <br>
           {{ feedback.comment }}
         </li>
       {% empty %}
@@ -22,6 +30,7 @@
       {% endfor %}
     </ul>
   </div>
+  
   
   <p><a href="{% url 'vendor_list' %}">Back to Vendor List</a></p>
 {% endblock %}

@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import Product, CURRENCY_CHOICES
+from .models import Product, CURRENCY_CHOICES, Category
 
 USER_TYPE_CHOICES = (
     ('consumer', 'Consumer'),
@@ -20,7 +20,7 @@ class CustomUserCreationForm(UserCreationForm):
         widget=forms.RadioSelect,
         required=True
     )
-    # Vendor-only fields (will be enforced via validation)
+    
     phone_number = forms.CharField(
         max_length=20,
         required=False,
@@ -38,8 +38,6 @@ class CustomUserCreationForm(UserCreationForm):
 
     class Meta:
         model = User
-        # Note: Django’s User model already contains username, email, first_name, last_name, and password.
-        # We include full_name here to later split into first and last names.
         fields = ('username', 'full_name', 'email', 'user_type', 'phone_number', 'market', 'password1', 'password2', 'terms_accepted')
 
     def clean(self):
@@ -54,7 +52,6 @@ class CustomUserCreationForm(UserCreationForm):
                 self.add_error('market', 'Market is required for vendors.')
         return cleaned_data
 
-# Custom login form including a user type choice
 class CustomAuthenticationForm(AuthenticationForm):
     user_type = forms.ChoiceField(
         choices=USER_TYPE_CHOICES,
@@ -66,8 +63,7 @@ class CustomAuthenticationForm(AuthenticationForm):
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        # Include fields for product name, price, image, market, and door_number.
-        fields = ['name', 'price', 'image', 'currency', 'market', 'door_number', 'description']
+        fields = ['name', 'price', 'image', 'currency', 'market', 'door_number', 'description', 'category']
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'Product name'}),
             'price': forms.NumberInput(attrs={'placeholder': 'Price'}),
@@ -75,13 +71,17 @@ class ProductForm(forms.ModelForm):
             'market': forms.TextInput(attrs={'placeholder': 'Market'}),
             'door_number': forms.TextInput(attrs={'placeholder': 'Door number'}),
             'description': forms.Textarea(attrs={'placeholder': 'Description'}),
-            'category': forms.Textarea(attrs={'placeholder': 'category'}),
+            'category': forms.Select(),  # This is where you define that 'category' should be a select dropdown
         }
+
+    def __init__(self, *args, **kwargs):
+        super(ProductForm, self).__init__(*args, **kwargs)
+        # Populate the category dropdown with categories from the database
+        self.fields['category'].queryset = Category.objects.all()
 
     
 
 class RateVendorForm(forms.Form):
-    # Rating choices from 1 to 5
     rating = forms.ChoiceField(
         choices=[(i, i) for i in range(1, 6)],
         widget=forms.RadioSelect,

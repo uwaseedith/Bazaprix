@@ -171,12 +171,26 @@ def add_product(request):
     return render(request, 'Baza/add_product.html', {'form': form})
 
 def product_list(request):
-    products = Product.objects.all()
-    return render(request, 'Baza/product_list.html', {'products': products})
+    category_name = request.GET.get('category', None)
+    if category_name:
+        category = Category.objects.get(name=category_name)
+        products = Product.objects.filter(category=category)
+    else:
+        products = Product.objects.all()
+    
+    categories = Category.objects.all()
+    return render(request, 'Baza/product_list.html', {'products': products, 'categories': categories})
 
 def cproduct_list(request):
-    products = Product.objects.all()
-    return render(request, 'Baza/consumer-product_list.html', {'products': products})
+    category_name = request.GET.get('category', None)
+    if category_name:
+        category = Category.objects.get(name=category_name)
+        products = Product.objects.filter(category=category)
+    else:
+        products = Product.objects.all()
+    
+    categories = Category.objects.all()
+    return render(request, 'Baza/consumer-product_list.html', {'products': products, 'categories': categories})
 
 @login_required
 def update_product_price(request, product_id):
@@ -233,7 +247,8 @@ def vendor_detail(request, vendor_id):
     View to show the details of a single vendor.
     """
     vendor = get_object_or_404(Vendor, id=vendor_id)
-    return render(request, 'Baza/vendor_detail.html', {'vendor': vendor})
+    range_of_stars = [1, 2, 3, 4, 5]
+    return render(request, 'Baza/vendor_detail.html', {'vendor': vendor, 'range_of_stars': range_of_stars, 'feedbacks': vendor.feedbacks.all()})
 
 @login_required
 def update_product(request, product_id):
@@ -355,3 +370,36 @@ def contact_us(request):
 
 def faq(request):
     return render(request, 'Baza/faq.html')
+
+def category_products(request, category_name):
+    # Get the category object based on the name passed in the URL
+    category = get_object_or_404(Category, name=category_name)
+    
+    # Fetch products that belong to this category
+    products = Product.objects.filter(category=category)
+    
+    context = {
+        'category': category,
+        'products': products,
+    }
+    
+    return render(request, 'Baza/category_products.html', context)
+
+
+def consumer_category_products(request, category_name):
+    # Get the category object based on the name passed in the URL
+    category = get_object_or_404(Category, name=category_name)
+    
+    # Fetch products that belong to this category
+    products = Product.objects.filter(category=category)
+    
+    # Fetch all categories to display on the page
+    categories = Category.objects.all()
+    
+    context = {
+        'category': category,
+        'products': products,
+        'categories': categories,  # Add this to pass categories to the template
+    }
+    
+    return render(request, 'Baza/consumer_category_products.html', context)

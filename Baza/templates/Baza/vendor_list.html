@@ -6,7 +6,6 @@
   <ul>
     {% for vendor in vendors %}
       <li>
-        <!-- The vendor name is clickable and directs to the vendor detail page -->
         <a href="{% url 'vendor_detail' vendor.id %}">
           {{ vendor.business_name }}
         </a>

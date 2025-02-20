@@ -1,0 +1,32 @@
+{% extends "Baza/vendor_base.html" %}
+{% load static %}
+
+{% block content %}
+  <h2>{{ category.name }} Products</h2>
+
+  <div class="product-grid">
+    {% for product in products %}
+      <div class="card">
+        {% if product.image %}
+          <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+        {% else %}
+          <img src="{% static 'Baza/images/default.jpg' %}" class="card-img-top" alt="No image available">
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title">{{ product.name }}</h5>
+          <p class="card-text">{{ product.description|truncatewords:10 }}</p>
+          <p class="card-text"><strong>Price:</strong> {{ product.price }} {{ product.currency }}</p>
+          <a href="{% url 'product_detail' product.id %}" class="btn btn-primary">View Details</a>
+          {% if product.vendor == request.user.vendor %}
+            <form method="post" action="{% url 'delete_product' product.id %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">Delete Product</button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+    {% empty %}
+      <p>No products available in this category yet.</p>
+    {% endfor %}
+  </div>
+{% endblock %}

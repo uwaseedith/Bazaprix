@@ -37,6 +37,8 @@ urlpatterns = [
     path('about-us/', views.about_us, name='about_us'),
     path('faq/', views.faq, name='faq'),
     path('contact-us/', views.contact_us, name='contact_us'),
+    path('category/<str:category_name>/', views.category_products, name='category_products'),
+    path('consumer_category/<str:category_name>/', views.consumer_category_products, name='consumer_category_products'),
 
 
 

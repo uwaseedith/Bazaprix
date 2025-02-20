@@ -1,0 +1,33 @@
+{% extends "Baza/consumer_base.html" %}
+{% load static %}
+
+{% block content %}
+  <h2>{{ category.name }} Products</h2>
+
+  <div class="product-grid">
+    {% for product in products %}
+      <div class="card">
+        {% if product.image %}
+          <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+        {% else %}
+          <img src="{% static 'Baza/images/default.jpg' %}" class="card-img-top" alt="No image available">
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title">{{ product.name }}</h5>
+          <p class="card-text">{{ product.description|truncatewords:10 }}</p>
+          <p class="card-text"><strong>Price:</strong> {{ product.price }} {{ product.currency }}</p>
+          <a href="{% url 'cproduct_detail' product.id %}" class="btn btn-primary">View Details</a>
+
+          <div class="card-footer text-center">
+            <form method="post" action="{% url 'save_product' product.id %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-primary btn-block">Save Product</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p>No products available in this category yet.</p>
+    {% endfor %}
+  </div>
+{% endblock %}

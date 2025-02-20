@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Avg
 
-# Define currency choices
+
 CURRENCY_CHOICES = (
     ('USD', 'US Dollars'),
     ('RWF', 'Rwandan Francs'),
@@ -11,10 +11,30 @@ CURRENCY_CHOICES = (
 )
 
 class Category(models.Model):
-    name = models.CharField(max_length=100)
+    CATEGORY_CHOICES = [
+        ('food', 'Food'),
+        ('electronics', 'Electronics'),
+        ('apparel_fashion', 'Apparel & Fashion'),
+        ('health_beauty', 'Health & Beauty'),
+        ('home_garden', 'Home & Garden'),
+        ('sports_outdoors', 'Sports & Outdoors'),
+        ('automotive', 'Automotive'),
+        ('toys_games', 'Toys & Games'),
+        ('books_music_media', 'Books, Music & Media'),
+        ('office_supplies', 'Office Supplies'),
+        ('tools_hardware', 'Tools & Hardware'),
+        ('pet_supplies', 'Pet Supplies'),
+        ('baby_kids_products', 'Baby & Kids’ Products'),
+        ('jewelry_accessories', 'Jewelry & Accessories'),
+        ('arts_crafts_hobbies', 'Arts, Crafts & Hobbies'),
+        ('industrial_scientific', 'Industrial & Scientific'),
+    ]
+    name = models.CharField(max_length=100, choices=CATEGORY_CHOICES)
+    description = models.TextField()
 
     def __str__(self):
-        return self.name
+        return self.get_name_display()
+
 
 class Vendor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -46,11 +66,9 @@ class Product(models.Model):
         This value is suggested as the price a consumer might expect to pay.
         """
         similar_products = Product.objects.filter(name__iexact=self.name)
-        # If at least one exists, calculate the average.
         if similar_products.exists():
             avg_price = similar_products.aggregate(avg=Avg('price'))['avg']
             return avg_price
-        # Fallback: return this product's price
         return self.price
 
 class PriceUpdate(models.Model):
@@ -58,7 +76,6 @@ class PriceUpdate(models.Model):
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     timestamp = models.DateTimeField(auto_now_add=True)
-    # For crowdsourced submissions, this can be null if submitted by a vendor
     submitted_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
@@ -69,9 +86,9 @@ class PriceAlert(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='price_alerts')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     previous_price = models.DecimalField(max_digits=10, decimal_places=2)
-    new_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)  # Added default
+    new_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)  
     change_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    change_type = models.CharField(max_length=20, default='increased')  # Added default, e.g., 'increased'
+    change_type = models.CharField(max_length=20, default='increased')  
     created_at = models.DateTimeField(auto_now_add=True)
     seen = models.BooleanField(default=False) 
 
@@ -88,9 +105,9 @@ class Transaction(models.Model):
     
 class Feedback(models.Model):
     vendor = models.ForeignKey('Vendor', on_delete=models.CASCADE, related_name='feedbacks')
-    author = models.CharField(max_length=255)  # You can store the consumer's name or username
+    author = models.CharField(max_length=255)  
     comment = models.TextField()
-    rating = models.PositiveSmallIntegerField()  # e.g., 1 to 5
+    rating = models.PositiveSmallIntegerField()  
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
