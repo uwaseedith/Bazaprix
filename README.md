@@ -112,25 +112,27 @@ You can now access the application at `http://127.0.0.1:8000/`.
 
 ### Infrastructure
 
-For the deployment of **Bazaprix**, we will use the following infrastructure setup:
+For the deployment of **Bazaprix** using Render, we will use the following infrastructure setup:
 
-1. **Cloud Hosting**: 
-    - AWS EC2 for the virtual server hosting.
-    - Amazon RDS (MySQL) to host the database securely.
-    - Amazon S3 for storing product images.
-    - Elastic Load Balancer (ELB) for distributing traffic to multiple instances of the application if required.
+1. **Cloud Hosting:**
+    - **Render Web Service** for hosting the application.
+    - **Render Managed Database** (MySQL or PostgreSQL) to host the database securely.
+    - Render automatically scales and load-balances traffic across multiple instances as needed.
 
-2. **Docker**:
+2. **Docker:**
     - The application will be containerized using Docker, ensuring consistency across different environments (development, staging, production).
-    - Docker Compose will be used to manage multi-container setups like the application server and database.
+    - Docker Compose can be used locally for multi-container setups (e.g., application server and database).
 
-3. **CI/CD**:
-    - Jenkins or GitHub Actions for automated deployment pipelines.
+3. **CI/CD:**
+    - Render integrates directly with GitHub for automated deployment pipelines.
+    - Optionally, use GitHub Actions for additional testing or building Docker images before deploying.
     - GitHub repository for version control and collaboration.
+
+---
 
 ### 1. Dockerize the Application
 
-To deploy the application in a Docker container, create a `Dockerfile` in the root directory of your project:
+Create a `Dockerfile` in the root directory of your project:
 
 ```Dockerfile
 # Use the official Python image from Docker Hub
@@ -149,60 +151,85 @@ COPY . /app/
 # Expose the port the app runs on
 EXPOSE 8000
 
-# Start the Django app using the development server (for demo purposes)
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Start the Django app using Gunicorn (production-ready)
+CMD ["gunicorn", "yourproject.wsgi:application", "--bind", "0.0.0.0:8000"]
 ```
 
-### 2. Deploying on AWS EC2
+---
 
-1. **Set up an EC2 instance**: Use a free-tier or appropriate EC2 instance for your application.
-    - Choose an Amazon Machine Image (AMI) like Ubuntu.
-    - Configure security groups to allow access to HTTP (port 80) and SSH (port 22).
+### 2. Deploying on Render
 
-2. **Deploy the Docker container**:
-    - SSH into the EC2 instance:
-    ```bash
-    ssh -i "your-aws-key.pem" ubuntu@your-ec2-public-ip
-    ```
-    - Install Docker:
-    ```bash
-    sudo apt-get update
-    sudo apt-get install docker.io
-    sudo systemctl start docker
-    sudo systemctl enable docker
-    ```
-    - Build the Docker image and run the container:
-    ```bash
-    docker build -t bazaprix .
-    docker run -d -p 8000:8000 bazaprix
-    ```
+1. **Create a Web Service on Render:**
+    - Log in to your [Render dashboard](https://dashboard.render.com/).
+    - Click **New** > **Web Service**.
+    - Connect your GitHub repository.
+    - Select the **Docker** option—Render will automatically detect the `Dockerfile` in your repository.
+    - Specify any required environment variables (e.g., `DATABASE_URL`, `SECRET_KEY`, etc.).
+    - Set the port to match your container’s exposed port (e.g., `8000`).
 
-### 3. Set Up Amazon RDS for MySQL
+2. **Deploy the Application:**
+    - Render will build your Docker image and deploy your application.
+    - Use Render’s one-off command feature to run necessary Django management commands (e.g., migrations):
+      ```bash
+      python manage.py migrate
+      ```
 
-1. **Create an RDS instance** in the AWS Management Console.
-2. **Update `settings.py`** with the RDS endpoint and credentials to connect to the MySQL database.
-3. Ensure your RDS instance allows connections from the EC2 instance or from anywhere if necessary.
+---
 
-### 4. Set Up S3 for Static and Media Files
+### 3. Set Up the Managed Database
 
-1. **Create an S3 bucket** in the AWS Console.
-2. **Configure `settings.py`** for static and media file storage:
-    ```python
-    AWS_STORAGE_BUCKET_NAME = 'your-bucket-name'
-    AWS_ACCESS_KEY_ID = 'your-access-key'
-    AWS_SECRET_ACCESS_KEY = 'your-secret-key'
-    
-    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    ```
+1. **Create a Managed Database:**
+    - In your Render dashboard, create a new **Managed Database** (choose MySQL).
 
-### 5. Set Up Load Balancer (ELB)
+2. **Configure Database Connection:**
+    - Update your Django `settings.py` with the database credentials provided by Render.
+    - Ensure your application is configured to securely connect to the managed database.
 
-1. **Set up an Elastic Load Balancer** in AWS to distribute traffic between multiple EC2 instances if necessary.
-2. Ensure that the EC2 instances are configured to listen to traffic on port 80, with your Django app running behind the load balancer.
+---
 
-## Final Thoughts
+### 4. Configure Storage for Static and Media Files
 
-Once deployed, **Bazaprix** will be available as a fully functional price comparison platform, allowing users to explore products and vendors efficiently. With secure, scalable hosting on AWS and Docker, the platform is capable of handling a large number of users and product listings.
+2.  Using Render Object Storage**
+    - If available, set up Render’s Object Storage.
+    - Configure your application based on Render’s documentation for object storage.
+
+---
+
+### 5. Load Balancing & Scaling
+
+- Render automatically provides load balancing and scaling for your web service.
+- Configure auto-scaling options in the Render dashboard to handle increased traffic.
+
+---
+
+## CI/CD Pipeline
+
+- **Automated Deployments:**
+    - On every push to the main branch, Render automatically builds and deploys your application.
+    - Optionally, integrate GitHub Actions for additional pre-deployment testing or Docker image building.
+- **Version Control:**
+    - Use your GitHub repository for version control and collaboration.
+
+---
+
+### 6. Video Link
+**Link:** https://youtu.be/Ldb5UkxVfRM
+
+---
+
+### 7. Designs
+**Link:** https://github.com/uwaseedith/Bazaprix/tree/main/Designs
+
+---
+
+
+### 8. Schemas
+**Link:** https://drive.google.com/file/d/1-fZaI5ahMmED7v8itQ1KiJrBrYmIAjMH/view?usp=sharing
+
+---
+
+
+### 9. Github Link
+**Link:** https://github.com/uwaseedith/Bazaprix
 
 ---
