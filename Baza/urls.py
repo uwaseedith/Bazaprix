@@ -39,6 +39,9 @@ urlpatterns = [
     path('contact-us/', views.contact_us, name='contact_us'),
     path('category/<str:category_name>/', views.category_products, name='category_products'),
     path('consumer_category/<str:category_name>/', views.consumer_category_products, name='consumer_category_products'),
+    path('vendor/profile-settings/', views.vendor_profile_settings, name='vendor_profile_settings'),
+    path('consumer/profile-settings/', views.consumer_profile_settings, name='consumer_profile_settings'),
+    path("set-language/", views.set_language_preference, name="set_language_preference"),
 
 
 

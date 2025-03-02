@@ -1,12 +1,14 @@
 {% extends "Baza/consumer_base.html" %}
 {% load static %}
+{% load custom_filters %}  
 
 {% block content %}
-  <h2>Rate Vendor: {{ vendor.business_name }}</h2>
+  <h2>{{ "Rate Vendor: "|translate:language_preference }}{{ vendor.business_name }}</h2>  <!-- Translates the "Rate Vendor:" heading -->
+  
   <form method="post">
       {% csrf_token %}
       {{ form.as_p }}
-      <button type="submit">Submit Rating</button>
+      <button type="submit">{{ "Submit Rating"|translate:language_preference }}</button>  <!-- Translates the "Submit Rating" button -->
   </form>
 
 {% endblock %}

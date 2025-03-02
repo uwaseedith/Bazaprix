@@ -1,11 +1,12 @@
 {% extends "Baza/vendor_base.html" %}
 {% load static %}
+{% load custom_filters %}
 
 {% block content %}
-  <h2>Add a New Product</h2>
+  <h2>{{ "Add a New Product"|translate:language_preference }}</h2>
   <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
       {{ form.as_p }}
-      <button type="submit">Add Product</button>
+      <button type="submit">{{ "Add Product"|translate:language_preference }}</button>
   </form>
 {% endblock %}

@@ -1,31 +1,30 @@
 {% extends "Baza/base.html" %}
-{% load static %}
+{% load static custom_filters %}
 
 {% block content %}
-<h2>Frequently Asked Questions (FAQ)</h2>
+<h2>{{ "Frequently Asked Questions (FAQ)"|translate:language_preference }}</h2>
 
 <section id="how-it-works">
-  <h3>How It Works</h3>
+  <h3>{{ "How It Works"|translate:language_preference }}</h3>
   <p>
-    BazaPrix aggregates price data from multiple vendors and verified consumer submissions to provide real-time price comparisons. 
-    Whether you’re a consumer looking for the best deal or a vendor striving for competitive pricing, our platform enables informed decision‐making by providing a comprehensive overview of market prices.
+    {{ "BazaPrix aggregates price data from multiple vendors and verified consumer submissions to provide real-time price comparisons. Whether you’re a consumer looking for the best deal or a vendor striving for competitive pricing, our platform enables informed decision‐making by providing a comprehensive overview of market prices."|translate:language_preference }}
   </p>
   <ul>
-    <li><strong>Data Aggregation:</strong> Our system collects pricing information from a wide network of vendors and validated consumer inputs.</li>
-    <li><strong>Real-time Updates:</strong> Prices are updated in near real-time, ensuring you have the latest information at your fingertips.</li>
-    <li><strong>Product Comparison:</strong> Easily compare prices of essential items across various vendors to get the best value.</li>
+    <li><strong>{{ "Data Aggregation:"|translate:language_preference }}</strong> {{ "Our system collects pricing information from a wide network of vendors and validated consumer inputs."|translate:language_preference }}</li>
+    <li><strong>{{ "Real-time Updates:"|translate:language_preference }}</strong> {{ "Prices are updated in near real-time, ensuring you have the latest information at your fingertips."|translate:language_preference }}</li>
+    <li><strong>{{ "Product Comparison:"|translate:language_preference }}</strong> {{ "Easily compare prices of essential items across various vendors to get the best value."|translate:language_preference }}</li>
   </ul>
 </section>
 
 <section id="pricing-and-data-accuracy">
-  <h3>Pricing and Data Accuracy</h3>
+  <h3>{{ "Pricing and Data Accuracy"|translate:language_preference }}</h3>
   <p>
-    At BazaPrix, accuracy is paramount. We use automated feeds combined with crowdsourced data—subject to verification—to maintain up-to-date pricing information.
+    {{ "At BazaPrix, accuracy is paramount. We use automated feeds combined with crowdsourced data—subject to verification—to maintain up-to-date pricing information."|translate:language_preference }}
   </p>
   <ul>
-    <li><strong>Automated and Manual Checks:</strong> Data is continually cross-checked using both automated systems and manual audits to minimize errors.</li>
-    <li><strong>Transparency:</strong> Any discrepancies or updates are clearly communicated to ensure that users can trust the information provided.</li>
-    <li><strong>Continuous Improvement:</strong> We actively refine our data collection and verification processes to enhance accuracy and reliability.</li>
+    <li><strong>{{ "Automated and Manual Checks:"|translate:language_preference }}</strong> {{ "Data is continually cross-checked using both automated systems and manual audits to minimize errors."|translate:language_preference }}</li>
+    <li><strong>{{ "Transparency:"|translate:language_preference }}</strong> {{ "Any discrepancies or updates are clearly communicated to ensure that users can trust the information provided."|translate:language_preference }}</li>
+    <li><strong>{{ "Continuous Improvement:"|translate:language_preference }}</strong> {{ "We actively refine our data collection and verification processes to enhance accuracy and reliability."|translate:language_preference }}</li>
   </ul>
 </section>
 

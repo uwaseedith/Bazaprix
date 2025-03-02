@@ -1,8 +1,10 @@
 {% extends "Baza/consumer_base.html" %}
-{% load static %}
+{% load custom_filters %}
+{% load i18n %}  <!-- Load translation library here -->
+{% load static %} 
 
 {% block content %}
-  <h2>{{ category.name }} Products</h2>
+  <h2>{{ category.name|translate:language_preference }} Products</h2>  <!-- Translates category name -->
 
   <div class="product-grid">
     {% for product in products %}
@@ -10,24 +12,24 @@
         {% if product.image %}
           <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
         {% else %}
-          <img src="{% static 'Baza/images/default.jpg' %}" class="card-img-top" alt="No image available">
+          <img src="{% static 'Baza/images/default.jpg' %}" class="card-img-top" alt="{% trans 'No image available' %}">
         {% endif %}
         <div class="card-body">
-          <h5 class="card-title">{{ product.name }}</h5>
-          <p class="card-text">{{ product.description|truncatewords:10 }}</p>
-          <p class="card-text"><strong>Price:</strong> {{ product.price }} {{ product.currency }}</p>
-          <a href="{% url 'cproduct_detail' product.id %}" class="btn btn-primary">View Details</a>
+          <h5 class="card-title">{{ product.name|translate:language_preference }}</h5>  <!-- Translates product name -->
+          <p class="card-text">{{ product.description|translate:language_preference|truncatewords:10 }}</p>  <!-- Translates product description -->
+          <p class="card-text"><strong>{% trans 'Price:' %}</strong> {{ product.price }} {{ product.currency }}</p>  <!-- Translates static text "Price:" -->
+          <a href="{% url 'cproduct_detail' product.id %}" class="btn btn-primary">{{"View Details"|translate:language_preference }}</a>  <!-- Translates static text "View Details" -->
 
           <div class="card-footer text-center">
             <form method="post" action="{% url 'save_product' product.id %}">
               {% csrf_token %}
-              <button type="submit" class="btn btn-primary btn-block">Save Product</button>
+              <button type="submit" class="btn btn-primary btn-block">{{"Save Product"|translate:language_preference}}</button>  <!-- Translates static text "Save Product" -->
             </form>
           </div>
         </div>
       </div>
     {% empty %}
-      <p>No products available in this category yet.</p>
+      <p>{% trans 'No products available in this category yet.' %}</p>  <!-- Translates static text "No products available in this category yet." -->
     {% endfor %}
   </div>
 {% endblock %}

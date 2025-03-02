@@ -1,17 +1,18 @@
 {% extends "Baza/consumer_base.html" %}
 {% load static %}
+{% load custom_filters %}  <!-- Load translation library here -->
 
 {% block content %}
-  <h2>All Vendors</h2>
+  <h2>{{ "All Vendors"|translate:language_preference }}</h2>  <!-- Translates the "All Vendors" heading -->
   <ul>
     {% for vendor in vendors %}
       <li>
         <a href="{% url 'vendor_detail' vendor.id %}">
-          {{ vendor.business_name }}
+          {{ vendor.business_name}}  <!-- Translates vendor business name -->
         </a>
       </li>
     {% empty %}
-      <li>No vendors found.</li>
+      <li>{{ "No vendors found."|translate:language_preference }}</li>  <!-- Translates the "No vendors found." message -->
     {% endfor %}
   </ul>
 {% endblock %}

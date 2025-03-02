@@ -1,15 +1,26 @@
 {% extends "Baza/consumer_base.html" %}
 {% load static %}
+{% load custom_filters %}  <!-- Load translation library here -->
+
 {% block content %}
-  <h2>{{ product.name }}</h2>
+  <h2>{{ product.name|translate:language_preference }}</h2>  <!-- Translates product name -->
+
   {% if product.image %}
-    <img src="{{ product.image.url }}" alt="{{ product.name }}" width="300">
+    <img src="{{ product.image.url }}" alt="{{ product.name|translate:language_preference }}" width="300">  <!-- Translates alt text for image -->
   {% endif %}
-  <p><strong>Price:</strong> {{ product.price|floatformat:2 }} {{ product.currency }}</p>
-  <p><strong>Category:</strong> {{ product.category.name }}</p>
-  <p><strong>Market:</strong> {{ product.market }}</p>
-  <p><strong>Door Number:</strong> {{ product.door_number }}</p>
-  <p>{{ product.description }}</p>
-  <p><strong>Vendor:</strong> <a href="{% url 'rate_vendor' vendor_id=product.vendor.id %}"> {{ product.vendor.business_name }}</a></p>
-  <p><strong>Contact:</strong> {{ product.vendor.contact_info }}</p>
+
+  <p><strong>{{ "Price:"|translate:language_preference }}</strong> {{ product.price|floatformat:2 }} {{ product.currency }}</p>  <!-- Translates static text "Price:" -->
+  <p><strong>{{ "Category:"|translate:language_preference }}</strong> {{ product.category.name|translate:language_preference }}</p>  <!-- Translates static text "Category:" and category name -->
+  <p><strong>{{ "Market:"|translate:language_preference }}</strong> {{ product.market|translate:language_preference }}</p>  <!-- Translates static text "Market:" -->
+  <p><strong>{{ "Door Number:"|translate:language_preference }}</strong> {{ product.door_number|translate:language_preference }}</p>  <!-- Translates static text "Door Number:" -->
+  
+  <p>{{ product.description|translate:language_preference }}</p>  <!-- Translates product description -->
+
+  <p><strong>{{ "Vendor:"|translate:language_preference }}</strong> 
+    <a href="{% url 'rate_vendor' vendor_id=product.vendor.id %}"> 
+      {{product.vendor.business_name}}
+    </a>
+  </p>  <!-- Translates static text "Vendor:" and vendor business name -->
+
+  <p><strong>{{ "Contact:"|translate:language_preference }}</strong> {{ product.vendor.contact_info }}</p>  <!-- Translates static text "Contact:" -->
 {% endblock %}

@@ -1,20 +1,21 @@
 {% extends "Baza/base.html" %}
 {% load static %}
+{% load custom_filters %}  <!-- Load translation library here -->
 
 {% block content %}
-  <h2>Vendor Profile: {{ vendor.business_name }}</h2>
-  
+  <h2>{{ "Vendor Profile:"|translate:language_preference }} {{ vendor.business_name }}</h2>  <!-- Translates the "Vendor Profile:" heading -->
+
   <div>
-    <p><strong>Market (Where they work):</strong> {{ vendor.location }}</p>
-    <p><strong>Contact Info:</strong> {{ vendor.contact_info }}</p>
+    <p><strong>{{ "Market (Where they work):"|translate:language_preference }}</strong> {{ vendor.location }}</p>  <!-- Translates static text "Market (Where they work):" -->
+    <p><strong>{{ "Contact Info:"|translate:language_preference }}</strong> {{ vendor.contact_info }}</p>  <!-- Translates static text "Contact Info:" -->
   </div>
   
   <div>
-    <h3>Feedbacks</h3>
+    <h3>{{ "Feedbacks"|translate:language_preference }}</h3>  <!-- Translates "Feedbacks" heading -->
     <ul>
       {% for feedback in vendor.feedbacks.all %}
         <li>
-          <strong>Anonymous User</strong> rated 
+          <strong>{{ "Anonymous User"|translate:language_preference }}</strong> {{ "rated"|translate:language_preference }} 
           {% for i in range_of_stars %}
             {% if i <= feedback.rating %}
               <span class="filled-star">⭐</span>  <!-- Filled star -->
@@ -23,14 +24,13 @@
             {% endif %}
           {% endfor %}
           <br>
-          {{ feedback.comment }}
+          {{ feedback.comment|translate:language_preference }}
         </li>
       {% empty %}
-        <li>No feedback available yet.</li>
+        <li>{{ "No feedback available yet."|translate:language_preference }}</li>  <!-- Translates the "No feedback available yet." message -->
       {% endfor %}
     </ul>
   </div>
   
-  
-  <p><a href="{% url 'vendor_list' %}">Back to Vendor List</a></p>
+  <p><a href="{% url 'vendor_list' %}">{{ "Back to Vendor List"|translate:language_preference }}</a></p>  <!-- Translates the "Back to Vendor List" link -->
 {% endblock %}

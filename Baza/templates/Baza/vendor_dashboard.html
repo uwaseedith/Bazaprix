@@ -1,10 +1,9 @@
 {% extends 'Baza/vendor_base.html' %}
+{% load custom_filters %}
 
 {% block content %}
-
-
 <section>
-  <h2>Notifications</h2>
+  <h2>{{ "Notifications"|translate:language_preference }}</h2>
   <ul>
     {% for note in notifications %}
       <li>
@@ -12,42 +11,42 @@
          <small>{{ note.created_at|date:"SHORT_DATETIME_FORMAT" }}</small>
          <form method="post" action="{% url 'mark_notification_seen' note.id %}">
            {% csrf_token %}
-           <button type="submit">Mark seen</button>
+           <button type="submit">{{ "Mark seen"|translate:language_preference }}</button>
          </form>
       </li>
     {% empty %}
-      <li>No new notifications.</li>
+      <li>{{ "No new notifications."|translate:language_preference }}</li>
     {% endfor %}
   </ul>
 </section>
 
 <section>
-  <h2>Price Updates</h2>
+  <h2>{{ "Price Updates"|translate:language_preference }}</h2>
   <ul>
     {% for alert in price_updates %}
       <li>
-         <strong>{{ alert.product.name }}</strong> price was updated and has {{ alert.change_type }}  <br>
+         <strong>{{ alert.product.name }}</strong> {{ "price was updated and has"|translate:language_preference }} {{ alert.change_type }}<br>
          <small>{{ alert.created_at|date:"SHORT_DATETIME_FORMAT" }}</small>
          <form method="post" action="{% url 'mark_vendor_alert_seen' alert.id %}">
           {% csrf_token %}
-          <button type="submit">Mark seen</button>
+          <button type="submit">{{ "Mark seen"|translate:language_preference }}</button>
         </form>
       </li>
     {% empty %}
-      <li>No price updates.</li>
+      <li>{{ "No price updates."|translate:language_preference }}</li>
     {% endfor %}
   </ul>
 </section>
 
 <section>
-  <h2>Product Listings</h2>
+  <h2>{{ "Product Listings"|translate:language_preference }}</h2>
   <ul>
     {% for product in products %}
       <li>
         <strong>{{ product.name }}</strong>: {{ product.price }} {{ product.currency }}
       </li>
     {% empty %}
-      <li>No products listed yet.</li>
+      <li>{{ "No products listed yet."|translate:language_preference }}</li>
     {% endfor %}
   </ul>
 </section>

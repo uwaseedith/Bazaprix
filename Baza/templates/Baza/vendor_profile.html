@@ -3,20 +3,20 @@
 {% load custom_filters %}
 
 {% block content %}
-<h2>Vendor Profile</h2>
+<h2>{{ "Vendor Profile"|translate:language_preference }}</h2>
 
 <div>
-  <p><strong>Business Name:</strong> {{ vendor.business_name }}</p>
-  <p><strong>Market (Where you work):</strong> {{ vendor.location }}</p>
-  <p><strong>Contact Info:</strong> {{ vendor.contact_info }}</p>
+  <p><strong>{{ "Business Name:"|translate:language_preference }}</strong> {{ vendor.business_name }}</p>
+  <p><strong>{{ "Market (Where you work):"|translate:language_preference }}</strong> {{ vendor.location }}</p>
+  <p><strong>{{ "Contact Info:"|translate:language_preference }}</strong> {{ vendor.contact_info }}</p>
 </div>
 
 <div>
-  <h3>Feedbacks</h3>
+  <h3>{{ "Feedbacks"|translate:language_preference }}</h3>
   <ul>
     {% for feedback in vendor.feedbacks.all %}
       <li>
-        <strong>Anonymous User</strong> rated 
+        <strong>{{ "Anonymous User"|translate:language_preference }}</strong> {{ "rated"|translate:language_preference }}
         {% for i in 5|range_filter %}
           {% if i < feedback.rating %}
             <span class="filled-star">⭐</span>  
@@ -28,7 +28,7 @@
         {{ feedback.comment }}
       </li>
     {% empty %}
-      <li>No feedback available.</li>
+      <li>{{ "No feedback available."|translate:language_preference }}</li>
     {% endfor %}
   </ul>
 </div>

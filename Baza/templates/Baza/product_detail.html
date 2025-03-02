@@ -1,17 +1,25 @@
 {% extends "Baza/vendor_base.html" %}
 {% load static %}
+{% load custom_filters %}  <!-- Load translation library here -->
+
 {% block content %}
-  <h2>{{ product.name }}</h2>
+  <h2>{{ product.name|translate:language_preference }}</h2>  <!-- Translate the product name -->
+  
   {% if product.image %}
-    <img src="{{ product.image.url }}" alt="{{ product.name }}" width="300">
+    <img src="{{ product.image.url }}" alt="{{ product.name|translate:language_preference }}" width="300">  <!-- Translate alt text for the image -->
   {% endif %}
-  <p><strong>Price:</strong> {{ product.price|floatformat:2 }} {{ product.currency }}</p>
-  <p><strong>Category:</strong> {{ product.category.name }}</p>
-  <p><strong>Market:</strong> {{ product.market }}</p>
-  <p><strong>Door Number:</strong> {{ product.door_number }}</p>
-  <p>{{ product.description }}</p>
-  <strong>Vendor:</strong> 
-    {{ product.vendor.business_name }}
-<br>
-  <p><strong>Contact:</strong> {{ product.vendor.contact_info }}</p>
+
+  <p><strong>{{ "Price:"|translate:language_preference }}</strong> {{ product.price|floatformat:2 }} {{ product.currency }}</p>  <!-- Translate "Price:" -->
+  <p><strong>{{ "Category:"|translate:language_preference }}</strong> {{ product.category.name|translate:language_preference }}</p>  <!-- Translate "Category:" and the category name -->
+  <p><strong>{{ "Market:"|translate:language_preference }}</strong> {{ product.market|translate:language_preference }}</p>  <!-- Translate "Market:" -->
+  <p><strong>{{ "Door Number:"|translate:language_preference }}</strong> {{ product.door_number|translate:language_preference }}</p>  <!-- Translate "Door Number:" -->
+  
+  <p>{{ product.description|translate:language_preference }}</p>  <!-- Translate product description -->
+
+
+  <strong>{{ "Vendor:"|translate:language_preference }}</strong> 
+    {{ product.vendor.business_name }}  <!-- Translate vendor name -->
+  <br>
+
+  <p><strong>{{ "Contact:"|translate:language_preference }}</strong> {{ product.vendor.contact_info }}</p>  <!-- Translate "Contact:" -->
 {% endblock %}

@@ -2,11 +2,15 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import Product, CURRENCY_CHOICES, Category
+from django.contrib.auth import get_user_model  # This gets the custom User model
 
-USER_TYPE_CHOICES = (
+# Use get_user_model() to reference the custom user model
+User = get_user_model()
+
+USER_TYPE_CHOICES = [
     ('consumer', 'Consumer'),
     ('vendor', 'Vendor'),
-)
+]
 
 class CustomUserCreationForm(UserCreationForm):
     full_name = forms.CharField(
@@ -37,7 +41,7 @@ class CustomUserCreationForm(UserCreationForm):
     )
 
     class Meta:
-        model = User
+        model = User  # Ensure this points to the custom User model
         fields = ('username', 'full_name', 'email', 'user_type', 'phone_number', 'market', 'password1', 'password2', 'terms_accepted')
 
     def clean(self):
@@ -51,6 +55,7 @@ class CustomUserCreationForm(UserCreationForm):
             if not market:
                 self.add_error('market', 'Market is required for vendors.')
         return cleaned_data
+
 
 class CustomAuthenticationForm(AuthenticationForm):
     user_type = forms.ChoiceField(

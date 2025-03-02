@@ -1,10 +1,12 @@
 {% extends 'Baza/base.html' %}
+{% load custom_filters %}
 
 {% block content %}
-  <h2>Welcome to BazaPrix!</h2>
-  <p>Your one-stop platform for comparing prices on essential goods.</p>
+  <h2>{{ "Welcome to BazaPrix!"|translate:language_preference }}</h2>
+  <p>{{ "Your one-stop platform for comparing prices on essential goods."|translate:language_preference }}</p>
   <p>
     If you're interested in exploring our services, please 
-    <a href="{% url 'signup' %}">Sign Up</a> or <a href="{% url 'login' %}">Login</a>.
+    <a href="{% url 'signup' %}">{{ "Sign Up"|translate:language_preference }}</a> or 
+    <a href="{% url 'login' %}">{{ "Login"|translate:language_preference }}</a>.
   </p>
 {% endblock %}

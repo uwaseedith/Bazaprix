@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Product, Category, Vendor, PriceAlert, PriceUpdate, SavedProduct, Transaction, Feedback, Notification
+from .models import Product, Category, Vendor, PriceAlert, PriceUpdate, SavedProduct, Transaction, Feedback, Notification, Consumer
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login
 from .forms import CustomUserCreationForm, CustomAuthenticationForm, ProductForm, RateVendorForm
@@ -10,37 +10,83 @@ from decimal import Decimal
 import json
 from django.contrib import messages
 from django.db.models import Q
-
-def home(request):
-    # Retrieve some featured products (this example uses the first 5)
-    featured_products = Product.objects.all()[:5]
-    categories = Category.objects.all()
-    context = {
-        'featured_products': featured_products,
-        'categories': categories,
-    }
-    return render(request, 'Baza/home.html', context)
+from .utils import translate_text
+from django.utils import translation
+from django.conf import settings
+from django.utils.translation import activate
+from django.core.mail import send_mail
+from django.contrib.sites.shortcuts import get_current_site
 
 @login_required
 def vendor_profile(request):
     if not hasattr(request.user, 'vendor'):
         return redirect('consumer_dashboard')
     vendor = request.user.vendor
-    return render(request, 'Baza/vendor_profile.html', {'vendor': vendor})
+    
+    # Get language preference from the vendor object or default to 'en'
+    language_preference = vendor.language_preference if hasattr(vendor, 'language_preference') else 'en'
+    
+    context = {
+        'vendor': vendor,
+        'language_preference': language_preference  # Pass language preference to the template
+    }
+    
+    return render(request, 'Baza/vendor_profile.html', context)
+
 
 @login_required
 def consumer_profile(request):
+    # Redirect to vendor profile if the user has a 'vendor' attribute
     if hasattr(request.user, 'vendor'):
         return redirect('vendor_profile')
-    return render(request, 'Baza/consumer_profile.html')
 
+    # Get the user's language preference from the Consumer model
+    language_preference = request.user.consumer.language_preference if hasattr(request.user, 'consumer') else 'en'
+
+    # Pass the language preference to the template
+    context = {
+        'language_preference': language_preference
+    }
+
+    return render(request, 'Baza/consumer_profile.html', context)
+
+
+
+@login_required
 def product_detail(request, product_id):
+    """
+    View to show the details of a single product and its translation.
+    """
     product = get_object_or_404(Product, id=product_id)
-    return render(request, 'Baza/product_detail.html', {'product': product})
+    
+    # Get the user's language preference
+    language_preference = request.user.vendor.language_preference if hasattr(request.user, 'vendor') else 'en'
+    
+    # Translate product description based on language preference
+    translated_description = translate_text(product.description, language_preference)
 
+    context = {
+        'product': product,
+        'language_preference': language_preference,  # Pass language preference to the template
+        'translated_description': translated_description,  # Add the translated description
+    }
+
+    return render(request, 'Baza/product_detail.html', context)
+
+@login_required
 def cproduct_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    return render(request, 'Baza/cproduct_detail.html', {'product': product})
+
+    # Get the user's language preference
+    language_preference = request.user.consumer.language_preference if hasattr(request.user, 'consumer') else 'en'
+
+    # Pass the product and language preference to the template context
+    context = {
+        'product': product,
+        'language_preference': language_preference,  # Add language_preference to context
+    }
+
+    return render(request, 'Baza/cproduct_detail.html', context)
 
 def search(request):
     query = request.GET.get('q', '')
@@ -51,38 +97,135 @@ def search(request):
     }
     return render(request, 'Baza/search_results.html', context)
 
-
 def home(request):
-    return render(request, 'Baza/home.html')
+    # For authenticated users, use language preference from the Vendor profile
+    if request.user.is_authenticated and hasattr(request.user, 'vendor'):
+        user_language = request.user.vendor.language_preference
+    else:
+        # For unauthenticated users, check if language is stored in session
+        user_language = request.session.get('language_preference', 'en')  # Default to 'en' if not set
+
+    # Activate the language immediately to ensure it's applied
+    translation.activate(user_language)
+
+    # Pass the language preference to the template context
+    context = {
+        'language_preference': user_language,
+    }
+
+    return render(request, 'Baza/home.html', context)
+
+
+from django.core.mail import send_mail
+from django.contrib.sites.shortcuts import get_current_site
+from django.contrib.auth import login
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from .forms import CustomUserCreationForm
+from .models import Vendor, Consumer
+from django.utils.translation import activate
+from django.conf import settings
 
 def signup(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
+            user = form.save(commit=False)  # Don't commit yet so you can add fields manually
             user.email = form.cleaned_data.get('email')
             full_name = form.cleaned_data.get('full_name')
             names = full_name.split(' ', 1)
             user.first_name = names[0]
             if len(names) > 1:
                 user.last_name = names[1]
-            user.save()
-            
+            user.save()  # Save the user first so that the ID is generated
+
+            # Now that the user is saved, you can check if they are a vendor and create the Vendor instance
             user_type = form.cleaned_data.get('user_type')
             if user_type == 'vendor':
                 phone_number = form.cleaned_data.get('phone_number')
                 market = form.cleaned_data.get('market')
                 Vendor.objects.create(user=user, business_name=full_name, location=market, contact_info=phone_number)
+                
+                # Send a notification to all consumers that a new vendor has signed up
+                consumers = Consumer.objects.all()  # Assuming consumers need to be notified
+                subject = f"New Vendor Registered: {full_name}"
+                message = f"Hello, a new vendor has registered: {full_name}.\n\nCheck out their profile on the platform/"
+                
+                for consumer in consumers:
+                    send_mail(
+                        subject,
+                        message,
+                        settings.DEFAULT_FROM_EMAIL,  # Your email address
+                        [consumer.user.email],  # Send to the consumer's email
+                        fail_silently=False,
+                    )
+
+                # Send an email to the new user to confirm their registration as a vendor
+                subject_user = "Welcome to BazaPrix as a Vendor!"
+                message_user = f"Hello {full_name},\n\nThank you for registering as a vendor with BazaPrix. You can now manage your products and interact with consumers. Visit your profile at {get_current_site(request).domain}/vendor/{user.id}/ to start."
+
+            else:
+                # Send a notification to all vendors that a new consumer has signed up
+                vendors = Vendor.objects.all()  # Assuming vendors need to be notified
+                subject = f"New Consumer Registered: {full_name}"
+                message = f"Hello, a new consumer has signed up: {full_name}.\n\nCheck out their profile at {get_current_site(request).domain}/consumer/{user.id}/"
+                
+                for vendor in vendors:
+                    send_mail(
+                        subject,
+                        message,
+                        settings.DEFAULT_FROM_EMAIL,  # Your email address
+                        [vendor.user.email],  # Send to the vendor's email
+                        fail_silently=False,
+                    )
+
+                # Send an email to the new user to confirm their registration as a consumer
+                subject_user = "Welcome to BazaPrix as a Consumer!"
+                message_user = f"Hello {full_name},\n\nThank you for signing up as a consumer with BazaPrix. You can now explore products, vendors, and more. Visit your profile at {get_current_site(request).domain}/consumer/{user.id}/ to get started."
+
+            # Send the email to the new user
+            send_mail(
+                subject_user,
+                message_user,
+                settings.DEFAULT_FROM_EMAIL,  # Your email address
+                [user.email],  # Send to the new user's email
+                fail_silently=False,
+            )
+
+            # Set language preference (use session or default)
+            user_language = user.vendor.language_preference if hasattr(user, 'vendor') else request.session.get('language_preference', 'en')
+            activate(user_language)  # Activate the language immediately
+            request.session['django_language'] = user_language 
+
+            # Send a welcome email to the new user
+            send_welcome_email(user)
+
+
             
+            # Log in the user after saving everything
             login(request, user)
+            messages.success(request, "Signup successful!")
             return redirect('home')
     else:
         form = CustomUserCreationForm()
-    return render(request, 'Baza/signup.html', {'form': form})
+
+    return render(request, 'Baza/signup.html', {'form': form, 'language_preference': request.session.get('django_language', 'en')})
+
+def send_welcome_email(user):
+    subject = f"Welcome to BazaPrix, {user.first_name}!"
+    message = f"Hello {user.first_name},\n\nThank you for signing up with BazaPrix! We are excited to have you on board. Feel free to explore our platform and start browsing products.\n\nBest regards,\nThe BazaPrix Team"
+    
+    send_mail(
+        subject,
+        message,
+        settings.DEFAULT_FROM_EMAIL,  # Make sure this is configured in your settings
+        [user.email],
+        fail_silently=False,
+    )
 
 class CustomLoginView(LoginView):
     authentication_form = CustomAuthenticationForm
-    template_name = 'Baza/login.html'  
+    template_name = 'Baza/login.html'  # Path to the login template
 
     def get_success_url(self):
         """
@@ -95,13 +238,39 @@ class CustomLoginView(LoginView):
             return reverse_lazy('vendor_dashboard')
         else:
             return reverse_lazy('consumer_dashboard')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Get the user's language preference and pass it to the template
+        language_preference = self.request.user.consumer.language_preference if hasattr(self.request.user, 'consumer') else 'en'
+        context['language_preference'] = language_preference
+        return context
+
+        
         
 
 def consumer_terms(request):
-    return render(request, 'Baza/consumer_terms.html')
+    # Set the language preference (use session or default)
+    user_language = request.session.get('django_language', 'en')  # Default to 'en' if not set
+    translation.activate(user_language)  # Activate the language
+
+    context = {
+        'language_preference': user_language
+    }
+
+    return render(request, 'Baza/consumer_terms.html', context)
+
 
 def vendor_terms(request):
-    return render(request, 'Baza/vendor_terms.html')
+    # Set the language preference (use session or default)
+    user_language = request.session.get('django_language', 'en')  # Default to 'en' if not set
+    translation.activate(user_language)  # Activate the language
+
+    context = {
+        'language_preference': user_language
+    }
+
+    return render(request, 'Baza/vendor_terms.html', context)
 
 
 @login_required
@@ -114,23 +283,37 @@ def vendor_dashboard(request):
     price_updates = PriceAlert.objects.filter(product__vendor=vendor, seen=False).order_by('-created_at')
     products = Product.objects.filter(vendor=vendor)
     notifications = Notification.objects.filter(vendor=vendor, seen=False).order_by('-created_at')
+
+    # Access language_preference from the vendor object
+    language_preference = vendor.language_preference if hasattr(vendor, 'language_preference') else 'en'
+
     context = {
         'vendor': vendor,
         'price_updates': price_updates,
         'products': products,
         'notifications': notifications,
+        'language_preference': language_preference  # Pass the language_preference correctly
     }
+
     return render(request, 'Baza/vendor_dashboard.html', context)
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import SavedProduct, PriceAlert, Transaction, Product, PriceUpdate, Consumer
+import json
 
 @login_required
 def consumer_dashboard(request):
+    # Redirect vendor to their dashboard
     if hasattr(request.user, 'vendor'):
         return redirect('vendor_dashboard')
     
+    # Retrieve saved products, price alerts, and transactions for the logged-in user
     saved_products = SavedProduct.objects.filter(user=request.user)
     price_alerts = request.user.price_alerts.filter(seen=False).order_by('-created_at')
     transactions = Transaction.objects.filter(user=request.user).order_by('-transaction_date')
 
+    # Handle selected product and price history
     selected_product_id = request.GET.get('product_id')
     selected_product = None
     labels = []
@@ -144,6 +327,10 @@ def consumer_dashboard(request):
         except Product.DoesNotExist:
             selected_product = None
 
+    # Get the language preference for the user (assuming it's stored in the Consumer model)
+    language_preference = request.user.consumer.language_preference if hasattr(request.user, 'consumer') else 'en'
+
+    # Prepare context with all necessary data
     context = {
         'saved_products': saved_products,
         'price_alerts': price_alerts,
@@ -151,7 +338,10 @@ def consumer_dashboard(request):
         'selected_product': selected_product,
         'labels': json.dumps(labels),
         'data': json.dumps(data),
+        'language_preference': language_preference,  # Add language_preference to context
     }
+
+    # Render the dashboard with the provided context
     return render(request, 'Baza/consumer_dashboard.html', context)
 
 @login_required
@@ -165,32 +355,82 @@ def add_product(request):
             product = form.save(commit=False)
             product.vendor = request.user.vendor
             product.save()
+
+             # Send an email to all consumers who are following this vendor
+            consumers = Consumer.objects.all()
+            subject = f"New Product Added: {product.name}"
+            message = f"Hello, a new product, {product.name}, has been added by {product.vendor.business_name}.\n\nCheck it out here: {get_current_site(request).domain}/product/{product.id}/"
+            
+            for consumer in consumers:
+                send_mail(
+                    subject,
+                    message,
+                    settings.DEFAULT_FROM_EMAIL,  # Replace with your email address
+                    [consumer.user.email],
+                    fail_silently=False,
+                )
+
             return redirect('vendor_dashboard')
     else:
         form = ProductForm(initial={'vendor': request.user.vendor})
-    return render(request, 'Baza/add_product.html', {'form': form})
+
+    context = {
+        'form': form,
+        'language_preference': request.user.vendor.language_preference if hasattr(request.user, 'vendor') else 'en'
+    }
+    
+    return render(request, 'Baza/add_product.html', context)
+
 
 def product_list(request):
     category_name = request.GET.get('category', None)
+    
     if category_name:
-        category = Category.objects.get(name=category_name)
-        products = Product.objects.filter(category=category)
+        # Use filter() instead of get() to handle multiple categories
+        categories = Category.objects.filter(name=category_name)  # Returns a queryset
+        if categories.exists():
+            products = Product.objects.filter(category__in=categories)
+        else:
+            products = Product.objects.none()  # If no category is found, return an empty queryset
     else:
         products = Product.objects.all()
-    
-    categories = Category.objects.all()
-    return render(request, 'Baza/product_list.html', {'products': products, 'categories': categories})
+        categories = Category.objects.all()
 
+    language_preference = request.user.vendor.language_preference if hasattr(request.user, 'vendor') else 'en'
+
+    return render(request, 'Baza/product_list.html', {
+        'products': products,
+        'categories': categories,
+        'language_preference': language_preference
+    })
+
+
+@login_required
 def cproduct_list(request):
+    # Get the category name from the query parameters
     category_name = request.GET.get('category', None)
+    
+    # Fetch products based on the category or all products if no category is selected
     if category_name:
         category = Category.objects.get(name=category_name)
         products = Product.objects.filter(category=category)
     else:
         products = Product.objects.all()
-    
+
+    # Get all categories for the sidebar or filtering options
     categories = Category.objects.all()
-    return render(request, 'Baza/consumer-product_list.html', {'products': products, 'categories': categories})
+
+    # Get the user's language preference
+    language_preference = request.user.consumer.language_preference if hasattr(request.user, 'consumer') else 'en'
+
+    context = {
+        'products': products,
+        'categories': categories,
+        'language_preference': language_preference,  # Pass language preference to the template
+    }
+
+    return render(request, 'Baza/consumer-product_list.html', context)
+
 
 @login_required
 def update_product_price(request, product_id):
@@ -211,27 +451,43 @@ def update_product_price(request, product_id):
             return redirect('vendor_dashboard')
     return render(request, 'Baza/update_product_price.html', {'product': product})
 
+
+
 @login_required
 def rate_vendor(request, vendor_id):
     vendor = get_object_or_404(Vendor, id=vendor_id)
-    
+
     if request.method == "POST":
         form = RateVendorForm(request.POST)
         if form.is_valid():
             rating = form.cleaned_data['rating']
             comment = form.cleaned_data['comment']
-            Feedback.objects.create(
+            
+            # Create the feedback object
+            feedback = Feedback.objects.create(
                 vendor=vendor,
                 author=request.user.get_full_name() or request.user.username,
                 rating=rating,
                 comment=comment,
             )
-            
+
+            # Send an email to the vendor about the new feedback
+            subject = f"New Feedback for {vendor.business_name}"
+            message = f"You have received new feedback:\n\nRating: {rating}/5\nComment: {comment}"
+
+            # Assuming you want to notify the vendor's email
+            send_notification_email(vendor.user.email, subject, message)
+
             return redirect('vendor_profile')
     else:
         form = RateVendorForm()
-    
-    return render(request, 'Baza/rate_vendor.html', {'vendor': vendor, 'form': form})
+
+    # Get the user's language preference
+    language_preference = request.user.consumer.language_preference if hasattr(request.user, 'consumer') else 'en'
+
+    return render(request, 'Baza/rate_vendor.html', {'vendor': vendor, 'form': form, 'language_preference': language_preference})
+
+
 
 @login_required
 def vendor_list(request):
@@ -239,7 +495,18 @@ def vendor_list(request):
     View to list all vendors.
     """
     vendors = Vendor.objects.all()
-    return render(request, 'Baza/vendor_list.html', {'vendors': vendors})
+
+    # Get the user's language preference
+    language_preference = request.user.consumer.language_preference if hasattr(request.user, 'consumer') else 'en'
+
+    context = {
+        'vendors': vendors,
+        'language_preference': language_preference,  # Add language_preference to context
+    }
+
+    return render(request, 'Baza/vendor_list.html', context)
+
+
 
 @login_required
 def vendor_detail(request, vendor_id):
@@ -248,7 +515,16 @@ def vendor_detail(request, vendor_id):
     """
     vendor = get_object_or_404(Vendor, id=vendor_id)
     range_of_stars = [1, 2, 3, 4, 5]
-    return render(request, 'Baza/vendor_detail.html', {'vendor': vendor, 'range_of_stars': range_of_stars, 'feedbacks': vendor.feedbacks.all()})
+
+    # Get the user's language preference
+    language_preference = request.user.consumer.language_preference if hasattr(request.user, 'consumer') else 'en'
+
+    return render(request, 'Baza/vendor_detail.html', {
+        'vendor': vendor,
+        'range_of_stars': range_of_stars,
+        'language_preference': language_preference,  # Pass language_preference to the template
+        'feedbacks': vendor.feedbacks.all()
+    })
 
 @login_required
 def update_product(request, product_id):
@@ -362,14 +638,61 @@ def mark_notification_seen(request, notification_id):
 
 
 def about_us(request):
-    return render(request, 'Baza/about_us.html')
+    # For authenticated users, use language preference from the Vendor profile
+    if request.user.is_authenticated and hasattr(request.user, 'vendor'):
+        user_language = request.user.vendor.language_preference
+    else:
+        # For unauthenticated users, check if language is stored in session
+        user_language = request.session.get('language_preference', 'en')  # Default to 'en' if not set
+
+    # Activate the language immediately to ensure it's applied
+    translation.activate(user_language)
+
+    # Pass the language preference to the template context
+    context = {
+        'language_preference': user_language,
+    }
+
+    return render(request, 'Baza/about_us.html', context)
+
 
 def contact_us(request):
-    return render(request, 'Baza/contact_us.html')
+    # For authenticated users, use language preference from the Vendor profile
+    if request.user.is_authenticated and hasattr(request.user, 'vendor'):
+        user_language = request.user.vendor.language_preference
+    else:
+        # For unauthenticated users, check if language is stored in session
+        user_language = request.session.get('language_preference', 'en')  # Default to 'en' if not set
+
+    # Activate the language immediately to ensure it's applied
+    translation.activate(user_language)
+
+    # Pass the language preference to the template context
+    context = {
+        'language_preference': user_language,
+    }
+
+    return render(request, 'Baza/contact_us.html', context)
 
 
 def faq(request):
-    return render(request, 'Baza/faq.html')
+    # For authenticated users, use language preference from the Vendor profile
+    if request.user.is_authenticated and hasattr(request.user, 'vendor'):
+        user_language = request.user.vendor.language_preference
+    else:
+        # For unauthenticated users, check if language is stored in session
+        user_language = request.session.get('language_preference', 'en')  # Default to 'en' if not set
+
+    # Activate the language immediately to ensure it's applied
+    translation.activate(user_language)
+
+    # Pass the language preference to the template context
+    context = {
+        'language_preference': user_language,
+    }
+
+    return render(request, 'Baza/faq.html', context)
+
 
 def category_products(request, category_name):
     # Get the category object based on the name passed in the URL
@@ -378,9 +701,16 @@ def category_products(request, category_name):
     # Fetch products that belong to this category
     products = Product.objects.filter(category=category)
     
+    # Get the vendor's language preference or default to 'en'
+    language_preference = request.user.vendor.language_preference if hasattr(request.user, 'vendor') else 'en'
+
+    # Activate the language based on the user's preference
+    translation.activate(language_preference)
+
     context = {
         'category': category,
         'products': products,
+        'language_preference': language_preference,
     }
     
     return render(request, 'Baza/category_products.html', context)
@@ -393,13 +723,149 @@ def consumer_category_products(request, category_name):
     # Fetch products that belong to this category
     products = Product.objects.filter(category=category)
     
-    # Fetch all categories to display on the page
-    categories = Category.objects.all()
-    
+    # Get the vendor's language preference or default to 'en'
+    language_preference = request.user.consumer.language_preference if hasattr(request.user, 'consumer') else 'en'
+
+    # Activate the language based on the user's preference
+    translation.activate(language_preference)
+
     context = {
         'category': category,
         'products': products,
-        'categories': categories,  # Add this to pass categories to the template
+        'language_preference': language_preference,
     }
     
     return render(request, 'Baza/consumer_category_products.html', context)
+
+
+
+
+
+
+
+@login_required
+def vendor_profile_settings(request):
+    """Allows vendor to update profile settings including language preference."""
+    
+    if request.method == "POST":
+        # Get the language preference from the POST data
+        language = request.POST.get("language_preference")
+        
+        # Update the user's language preference in the Vendor model
+        request.user.vendor.language_preference = language
+        request.user.vendor.save()
+        
+        # Activate the new language for the session
+        activate(language)
+        
+        # Save the session's language preference
+        request.session['django_language'] = language
+
+        # Show success message
+        messages.success(request, "Profile settings updated successfully!")
+        
+        # Redirect to the same page to refresh with new language
+        return redirect("vendor_profile_settings")
+
+    # Get the current language preference
+    language_preference = request.user.vendor.language_preference if hasattr(request.user, 'vendor') else 'en'
+
+    context = {
+        'language_preference': language_preference
+    }
+
+    return render(request, "Baza/vendor_profile_settings.html", context)
+
+
+def consumer_profile_settings(request):
+    """Allows consumer to update profile settings including language preference."""
+    
+    if request.method == "POST":
+        # Get the language preference from the POST data
+        language = request.POST.get("language_preference")
+        
+        # Ensure the consumer object exists for the user
+        if not hasattr(request.user, 'consumer'):
+            # Create the consumer object if it doesn't exist
+            consumer = Consumer.objects.create(user=request.user, language_preference=language)
+        else:
+            # Update the user's language preference in the Consumer model
+            request.user.consumer.language_preference = language
+            request.user.consumer.save()
+        
+        # Activate the new language for the session
+        activate(language)
+        
+        # Save the session's language preference
+        request.session['django_language'] = language
+
+        # Show success message
+        messages.success(request, "Profile settings updated successfully!")
+        
+        # Redirect to the same page to refresh with new language
+        return redirect("consumer_profile_settings")
+
+    # Get the current language preference
+    language_preference = request.user.consumer.language_preference if hasattr(request.user, 'consumer') else 'en'
+
+    context = {
+        'language_preference': language_preference
+    }
+
+    return render(request, "Baza/Consumer_profile_settings.html", context)
+
+def set_language_preference(request):
+    """Allows both registered and unregistered users to set language preference."""
+    if request.method == "POST":
+        language = request.POST.get("language_preference")
+
+        if request.user.is_authenticated:
+            # For logged-in users, save preference to their profile
+            request.user.vendor.language_preference = language
+            request.user.vendor.save()
+            messages.success(request, "Profile settings updated successfully!")
+        else:
+            # For unregistered users, store preference in session
+            request.session["language_preference"] = language
+            messages.success(request, "Language preference saved for this session!")
+
+        # Activate the language immediately
+        translation.activate(language)
+
+        # Store the language preference in the session
+        request.session['django_language'] = language  # or 'language_preference' if needed
+
+        return redirect("home")  # Redirect user to homepage or another page
+
+    # Pass language_preference to the template
+    language_preference = request.session.get('language_preference', None)
+    if request.user.is_authenticated:
+        language_preference = request.user.vendor.language_preference
+
+    return render(request, "Baza/set_language.html", {'language_preference': language_preference})
+
+
+def send_notification_email(user, subject, message):
+    send_mail(
+        subject,
+        message,
+        settings.DEFAULT_FROM_EMAIL,
+        [user.email],  # The recipient's email address
+        fail_silently=False,
+    )
+
+
+@login_required
+def create_notification(request, vendor_id):
+    vendor = get_object_or_404(Vendor, id=vendor_id)
+    notification = Notification.objects.create(
+        vendor=vendor,
+        message="New product update available!"
+    )
+
+    # Send an email notification to the vendor
+    subject = f"New Notification for {vendor.business_name}"
+    message = f"You have a new notification: {notification.message}"
+    send_notification_email(vendor.user, subject, message)
+
+    return redirect('vendor_dashboard')

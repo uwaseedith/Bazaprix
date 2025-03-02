@@ -1,0 +1,34 @@
+{% extends 'Baza/vendor_base.html' %}
+{% load custom_filters %}
+{% block title %}{{ "Profile Settings - Hustle Platform"|translate:language_preference }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ "Profile Settings"|translate:language_preference }}</h2>
+
+    <!-- Display Messages -->
+    {% if messages %}
+    <div class="alert alert-info">
+        {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        
+        <label for="language">{{ "Preferred Language"|translate:language_preference }}:</label>
+        <select name="language_preference" class="form-control">
+            <option value="en" {% if user.language_preference == 'en' %}selected{% endif %}>{{ "English"|translate:language_preference }}</option>
+            <option value="fr" {% if user.language_preference == 'fr' %}selected{% endif %}>{{ "French"|translate:language_preference }}</option>
+            <option value="es" {% if user.language_preference == 'es' %}selected{% endif %}>{{ "Spanish"|translate:language_preference }}</option>
+            <option value="sw" {% if user.language_preference == 'sw' %}selected{% endif %}>{{ "Swahili"|translate:language_preference }}</option>
+            
+            <option value="rw" {% if user.language_preference == 'rw' %}selected{% endif %}>{{ "Kirundi"|translate:language_preference }}</option>
+        </select>
+        
+        <button type="submit" class="btn btn-primary mt-2">{{ "Save Settings"|translate:language_preference }}</button>
+    </form>
+</div>
+{% endblock %}

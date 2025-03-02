@@ -1,22 +1,27 @@
-{% extends 'Baza/base.html' %}
+{% extends "Baza/base.html" %}
+{% load static %}
+{% load custom_filters %}  <!-- Load translation library here -->
 
 {% block content %}
-<h2>Login</h2>
+<h2>{{ "Login"|translate:language_preference }}</h2>  <!-- Translates the "Login" heading -->
 <form method="post">
     {% csrf_token %}
     {{ form.non_field_errors }}
+    
     <div>
         {{ form.username.label_tag }}<br>
         {{ form.username }}
         {{ form.username.errors }}
     </div>
+    
     <div>
         {{ form.password.label_tag }}<br>
         {{ form.password }}
         {{ form.password.errors }}
     </div>
+    
     <div>
-        <label>User Type:</label><br>
+        <label>{{ "User Type:"|translate:language_preference }}</label><br>  <!-- Translates the "User Type:" label -->
         {% for radio in form.user_type %}
             <div>
                 {{ radio.tag }} {{ radio.choice_label }}
@@ -24,6 +29,7 @@
         {% endfor %}
         {{ form.user_type.errors }}
     </div>
-    <button type="submit">Login</button>
+    
+    <button type="submit">{{ "Login"|translate:language_preference }}</button>  <!-- Translates the "Login" button -->
 </form>
 {% endblock %}

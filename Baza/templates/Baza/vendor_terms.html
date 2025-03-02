@@ -1,6 +1,7 @@
 {% extends 'Baza/base.html' %}
+{% load custom_filters %}
 
 {% block content %}
-<h2>Vendor Terms and Conditions</h2>
-<p>These are the vendor terms and conditions...</p>
+<h2>{{ "Vendor Terms and Conditions"|translate:language_preference }}</h2>
+<p>{{ "These are the vendor terms and conditions..."|translate:language_preference }}</p>
 {% endblock %}

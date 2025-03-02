@@ -48,6 +48,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
 ]
 
 ROOT_URLCONF = 'BazaPrix.urls'
@@ -121,7 +122,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-
+AUTH_USER_MODEL = 'Baza.User'  
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
@@ -140,3 +141,30 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'Baza', 'static')]
 # (Optional) For media file uploads:
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+LANGUAGES = [
+    ('en', 'English'),
+    ('fr', 'French'),
+    ('es', 'Spanish'),
+    ('sw', 'Swahili'),
+    ('rw', 'Kinyarwanda'),
+    ('rn', 'Rundi')
+]
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale'),  
+]
+
+LANGUAGE_CODE = 'en'
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'uwaseedith2@gmail.com'
+EMAIL_HOST_PASSWORD = 'lmqv ouat szfz iqvh'
+DEFAULT_FROM_EMAIL = 'BazaPrix <uwaseedith2@gmail.com>'

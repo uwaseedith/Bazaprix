@@ -1,15 +1,17 @@
 {% extends "Baza/consumer_base.html" %}
+{% load static %}
+{% load custom_filters %}  <!-- Load translation library here -->
 
 {% block content %}
-<h2>Product Categories</h2>
+<h2>{{ "Product Categories"|translate:language_preference }}</h2>  <!-- Translate "Product Categories" heading -->
 <div class="product-grid">
     {% for category in categories %}
         <div class="card">
-            <h3>{{ category.name }}</h3>
-            <p>{{ category.description }}</p>
+            <h3>{{ category.name|translate:language_preference }}</h3>  <!-- Translate category name -->
+            <p>{{ category.description|translate:language_preference }}</p>  <!-- Translate category description -->
             <!-- Link to category products page -->
             <div class="card-footer text-center">
-            <a href="{% url 'consumer_category_products' category.name %}" class="btn btn-secondary">View Products</a>
+                <a href="{% url 'consumer_category_products' category.name %}" class="btn btn-secondary">{{ "View Products"|translate:language_preference }}</a>  <!-- Translate "View Products" button -->
             </div>
         </div>
     {% endfor %}

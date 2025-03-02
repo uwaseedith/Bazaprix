@@ -1,45 +1,51 @@
 {% extends 'Baza/consumer_base.html' %}
 {% load static %}
+{% load custom_filters %}  <!-- Load translation library here -->
+
 {% block content %}
 
 <section>
-  <h2>Price Alerts</h2>
+  <h2>{{ "Price Alerts"|translate:language_preference }}</h2>  <!-- Translates the section heading -->
   <div class="alert-list">
     {% for alert in price_alerts %}
       <div class="alert-card">
-        <strong>{{ alert.product.name }}</strong> suggested price has {{ alert.change_type }} by {{ alert.change_amount|floatformat:2 }} (from {{ alert.previous_price }} to {{ alert.new_price }})<br>
+        <strong>{{ alert.product.name }}</strong> 
+        {{ "suggested price has"|translate:language_preference }} {{ alert.change_type }} 
+        {{ "by"|translate:language_preference }} {{ alert.change_amount|floatformat:2 }} 
+        {{ "from"|translate:language_preference }} {{ alert.previous_price }} 
+        {{ "to"|translate:language_preference }} {{ alert.new_price }}<br>
         <small>{{ alert.created_at|date:"SHORT_DATETIME_FORMAT" }}</small>
         <form method="post" action="{% url 'mark_alert_seen' alert.id %}">
           {% csrf_token %}
-          <button type="submit" class="btn btn-primary">Mark seen</button>
+          <button type="submit" class="btn btn-primary">{{ "Mark seen"|translate:language_preference }}</button>  <!-- Translates button text -->
         </form>
       </div>
     {% empty %}
-      <p>No price alerts.</p>
+      <p>{{ "No price alerts."|translate:language_preference }}</p>  <!-- Translates the no data message -->
     {% endfor %}
   </div>
 </section>
 
 <section>
-  <h2>Suggested Price</h2>
+  <h2>{{ "Suggested Price"|translate:language_preference }}</h2>  <!-- Translates the section heading -->
   <div class="suggested-price-list">
     {% for saved in saved_products %}
       <div class="suggested-price-card">
          <strong>{{ saved.product.name }}</strong>: 
-         Suggested Price: 
+         {{ "Suggested Price"|translate:language_preference }}: 
          {% with preferred=saved.product.get_preferred_price %}
            {{ preferred|floatformat:2 }} {{ saved.product.currency }}
          {% endwith %}
-         <small>(Based on the average of all listings)</small>
+         <small>{{ "(Based on the average of all listings)"|translate:language_preference }}</small>  <!-- Translates the small text -->
       </div>
     {% empty %}
-      <p>No preferred prices available.</p>
+      <p>{{ "No preferred prices available."|translate:language_preference }}</p>  <!-- Translates the no data message -->
     {% endfor %}
   </div>
 </section>
 
 <section>
-  <h2>Saved Products</h2>
+  <h2>{{ "Saved Products"|translate:language_preference }}</h2>  <!-- Translates the section heading -->
   <div class="product-grid">
     {% for saved in saved_products %}
       <div class="card">
@@ -47,7 +53,7 @@
           {% if saved.product.image %}
             <img src="{{ saved.product.image.url }}" class="card-img-top img-fluid" alt="{{ saved.product.name }}" style="max-height:200px; object-fit:cover;">
           {% else %}
-            <img src="{% static 'Baza/images/default.jpg' %}" class="card-img-top img-fluid" alt="No image available" style="max-height:200px; object-fit:cover;">
+            <img src="{% static 'Baza/images/default.jpg' %}" class="card-img-top img-fluid" alt="{{ 'No image available'|translate:language_preference }}" style="max-height:200px; object-fit:cover;">
           {% endif %}
         </a>
         <div class="card-body">
@@ -56,7 +62,7 @@
         </div>
       </div>
     {% empty %}
-      <p>You have no saved products yet.</p>
+      <p>{{ "You have no saved products yet."|translate:language_preference }}</p>  <!-- Translates the no data message -->
     {% endfor %}
   </div>
 </section>

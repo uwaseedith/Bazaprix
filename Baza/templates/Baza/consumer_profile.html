@@ -1,10 +1,12 @@
 {% extends "Baza/consumer_base.html" %}
 {% load static %}
+{% load custom_filters %}
 
 {% block content %}
 
 <div>
-  <p><strong>Name:</strong> {{ user.get_full_name }}</p>
-  <p><strong>Email:</strong> {{ user.email }}</p>
+  <p><strong>{{ "Name:"|translate:language_preference }}</strong> {{ user.get_full_name }}</p>
+  <p><strong>{{ "Email:"|translate:language_preference }}</strong> {{ user.email }}</p>
 </div>
+
 {% endblock %}

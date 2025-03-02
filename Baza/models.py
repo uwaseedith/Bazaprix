@@ -1,7 +1,12 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AbstractUser
 from django.db.models import Avg
+from .utils import translate_text
 
+USER_TYPE_CHOICES = [
+    ('consumer', 'Consumer'),
+    ('vendor', 'Vendor'),
+]
 
 CURRENCY_CHOICES = (
     ('USD', 'US Dollars'),
@@ -9,6 +14,15 @@ CURRENCY_CHOICES = (
     ('BIF', 'Burundian Francs'),
     
 )
+
+LANGUAGE_CHOICES = [
+    ('en', 'English'),
+    ('fr', 'French'),
+    ('es', 'Spanish'),
+    ('sw', 'Swahili'),
+    ('rw', 'Kinyarwanda'),
+    ('rn', 'Rundi')
+]  
 
 class Category(models.Model):
     CATEGORY_CHOICES = [
@@ -35,12 +49,37 @@ class Category(models.Model):
     def __str__(self):
         return self.get_name_display()
 
+class Consumer(models.Model):
+    user = models.OneToOneField('User', on_delete=models.CASCADE, related_name='consumer')
+    language_preference = models.CharField(max_length=10, default='en')
+    
+class User(AbstractUser):
+    user_type = models.CharField(
+        max_length=10,
+        choices=USER_TYPE_CHOICES,
+        default='consumer'
+    )
+    language_preference = models.CharField(
+        max_length=2,
+        choices=[('en', 'English'), ('fr', 'French'), ('es', 'Spanish'), ('sw', 'Swahili')],
+        default='en'
+    )
+
+    def __str__(self):
+        return self.username
+    
+
 
 class Vendor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     business_name = models.CharField(max_length=255)
     location = models.CharField(max_length=255)
     contact_info = models.CharField(max_length=255)
+    language_preference = models.CharField(max_length=2, choices=LANGUAGE_CHOICES, default="en")
+    def translate_business_name(self, target_lang):
+        """Translates the business name dynamically."""
+        return translate_text(self.business_name, target_lang)
+
 
     def __str__(self):
         return self.business_name
@@ -56,6 +95,14 @@ class Product(models.Model):
     market = models.CharField(max_length=255, blank=True, null=True) 
     door_number = models.CharField(max_length=50, blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def translate_name(self, target_lang):
+        """Translates the product name dynamically."""
+        return translate_text(self.name, target_lang)
+
+    def translate_description(self, target_lang):
+        """Translates the product description dynamically."""
+        return translate_text(self.description, target_lang)
 
     def __str__(self):
         return self.name
@@ -134,3 +181,4 @@ class Notification(models.Model):
     
     def __str__(self):
         return f"Notification for {self.vendor.business_name} at {self.created_at}"
+    

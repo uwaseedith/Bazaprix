@@ -1,32 +1,36 @@
 {% extends "Baza/vendor_base.html" %}
+{% load custom_filters %}
 {% load static %}
 
+{% load i18n %}  <!-- Load translation library here -->
+
 {% block content %}
-  <h2>{{ category.name }} Products</h2>
+  <h2>{{ category.name|translate:language_preference }} Products</h2>  <!-- Translates category name -->
 
   <div class="product-grid">
     {% for product in products %}
       <div class="card">
         {% if product.image %}
-          <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+          <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name|translate:language_preference }}">
         {% else %}
-          <img src="{% static 'Baza/images/default.jpg' %}" class="card-img-top" alt="No image available">
+          <img src="{% static 'Baza/images/default.jpg' %}" class="card-img-top" alt="{% trans 'No image available' %}">
         {% endif %}
         <div class="card-body">
-          <h5 class="card-title">{{ product.name }}</h5>
-          <p class="card-text">{{ product.description|truncatewords:10 }}</p>
-          <p class="card-text"><strong>Price:</strong> {{ product.price }} {{ product.currency }}</p>
-          <a href="{% url 'product_detail' product.id %}" class="btn btn-primary">View Details</a>
+          <h5 class="card-title">{{ product.name|translate:language_preference }}</h5>  <!-- Translates product name -->
+          <p class="card-text">{{ product.description|translate:language_preference|truncatewords:10 }}</p>  <!-- Translates product description -->
+          <p class="card-text"><strong>{% trans 'Price:' %}</strong> {{ product.price }} {{ product.currency }}</p>  <!-- Translates static text "Price:" -->
+          <a href="{% url 'product_detail' product.id %}" class="btn btn-primary">{{ 'View Details'|translate:language_preference }}</a>  <!-- Translates static text "View Details" -->
+
           {% if product.vendor == request.user.vendor %}
             <form method="post" action="{% url 'delete_product' product.id %}" style="display:inline;">
               {% csrf_token %}
-              <button type="submit" class="btn btn-danger">Delete Product</button>
+              <button type="submit" class="btn btn-danger">{{ 'Delete Product'|translate:language_preference }}</button>  <!-- Translates static text "Delete Product" -->
             </form>
           {% endif %}
         </div>
       </div>
     {% empty %}
-      <p>No products available in this category yet.</p>
+      <p>{% trans 'No products available in this category yet.' %}</p>  <!-- Translates static text "No products available in this category yet." -->
     {% endfor %}
   </div>
 {% endblock %}

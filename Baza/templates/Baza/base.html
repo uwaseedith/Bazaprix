@@ -1,21 +1,22 @@
-{% load static %}
+{% load static custom_filters %}
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>BazaPrix</title>
+    <title>{{ "BazaPrix"|translate:language_preference }}</title>
     <link rel="stylesheet" href="{% static 'Baza/css/styles.css' %}">
 </head>
 <body>
     <header>
         <div class="header-top">
-            <h1>BazaPrix</h1>
+            <h1>{{ "BazaPrix"|translate:language_preference }}</h1>
             <nav class="nav-links">
-                <a href="{% url 'home' %}">Home</a>
-                <a href="{% url 'about_us' %}">About Us</a>
-                <a href="{% url 'contact_us' %}">Contact Us</a>
-                <a href="{% url 'faq' %}">FAQ</a>
+                <a href="{% url 'home' %}">{{ "Home"|translate:language_preference }}</a>
+                <a href="{% url 'about_us' %}">{{ "About Us"|translate:language_preference }}</a>
+                <a href="{% url 'contact_us' %}">{{ "Contact Us"|translate:language_preference }}</a>
+                <a href="{% url 'set_language_preference' %}">{{ "Language"|translate:language_preference }}</a>
+                <a href="{% url 'faq' %}">{{ "FAQ"|translate:language_preference }}</a>
             </nav>
         </div>
     </header>
@@ -23,7 +24,7 @@
         {% block content %}{% endblock %}
     </main>
     <footer>
-        <p>&copy; 2025 BazaPrix. All rights reserved.</p>
+        <p>&copy; 2025 BazaPrix {{ " All rights reserved."|translate:language_preference }}</p>
     </footer>
 </body>
 </html>

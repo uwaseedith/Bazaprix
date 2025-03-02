@@ -1,22 +1,21 @@
 {% extends "Baza/base.html" %}
-{% load static %}
+{% load static custom_filters %}
 
 {% block content %}
-<h2>Contact Us</h2>
-
+<h2>{{ "Contact Us"|translate:language_preference }}</h2>
 
 <section id="contact-us">
-  
-  <p>If you have any questions or need assistance, please get in touch with us:</p>
+  <p>{{ "If you have any questions or need assistance, please get in touch with us:"|translate:language_preference }}</p>
   <ul>
-    <li>Email: <a href="mailto:info@bazaprix.com">info@bazaprix.com</a></li>
-    <li>Phone: +123 456 7890</li>
+    <li>{{ "Email:"|translate:language_preference }} <a href="mailto:info@bazaprix.com">info@bazaprix.com</a></li>
+    <li>{{ "Phone:"|translate:language_preference }} +123 456 7890</li>
     <li>
-      Follow us on social media:
+      {{ "Follow us on social media:"|translate:language_preference }}
       <a href="https://facebook.com/bazaprix" target="_blank">Facebook</a>,
       <a href="https://twitter.com/bazaprix" target="_blank">Twitter</a>,
       <a href="https://instagram.com/bazaprix" target="_blank">Instagram</a>
     </li>
   </ul>
 </section>
+
 {% endblock %}

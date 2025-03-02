@@ -1,7 +1,8 @@
 {% extends 'Baza/base.html' %}
+{% load custom_filters %}
 
 {% block content %}
-<h2>Sign Up</h2>
+<h2>{{ "Sign Up"|translate:language_preference }}</h2>
 <form method="post">
     {% csrf_token %}
     {{ form.non_field_errors }}
@@ -21,7 +22,7 @@
         {{ form.email.errors }}
     </div>
     <div>
-        <label>User Type:</label><br>
+        <label>{{ "User Type:"|translate:language_preference }}</label><br>
         {% for radio in form.user_type %}
             <div>
                 {{ radio.tag }} {{ radio.choice_label }}
@@ -53,11 +54,11 @@
         {{ form.password2.errors }}
     </div>
     <div>
-        {{ form.terms_accepted }} I accept the 
-        <a href="#" id="terms_link" target="_blank">Terms and Conditions</a>
+        {{ form.terms_accepted }} {{ "I accept the"|translate:language_preference }}
+        <a href="#" id="terms_link" target="_blank">{{ "Terms and Conditions"|translate:language_preference }}</a>
         {{ form.terms_accepted.errors }}
     </div>
-    <button type="submit">Sign Up</button>
+    <button type="submit">{{ "Sign Up"|translate:language_preference }}</button>
 </form>
 
 <script>

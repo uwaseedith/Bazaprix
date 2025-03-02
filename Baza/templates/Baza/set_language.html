@@ -1,0 +1,33 @@
+{% extends 'Baza/base.html' %}
+
+{% block title %}Profile Settings - Hustle Platform{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Profile Settings</h2>
+
+    <!-- Display Messages -->
+    {% if messages %}
+    <div class="alert alert-info">
+        {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        
+        <label for="language">Preferred Language:</label>
+        <select name="language_preference" class="form-control">
+            <option value="en" {% if user.language_preference == 'en' %}selected{% endif %}>English</option>
+            <option value="fr" {% if user.language_preference == 'fr' %}selected{% endif %}>French</option>
+            <option value="es" {% if user.language_preference == 'es' %}selected{% endif %}>Spanish</option>
+            <option value="sw" {% if user.language_preference == 'sw' %}selected{% endif %}>Swahili</optKsion>
+            <option value="rw" {% if user.language_preference == 'rw' %}selected{% endif %}>Kirundi</optKsion>
+        </select>
+        
+        <button type="submit" class="btn btn-primary mt-2">Save Settings</button>
+    </form>
+</div>
+{% endblock %}
