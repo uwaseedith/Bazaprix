@@ -4,7 +4,7 @@
 
 {% block content %}
 <h2>{{ "Product Categories"|translate:language_preference }}</h2>  <!-- Translate "Product Categories" heading -->
-<div class="product-grid">
+<div class="category-cards">
     {% for category in categories %}
         <div class="card">
             <h3>{{ category.name|translate:language_preference }}</h3>  <!-- Translate category name -->

@@ -6,7 +6,7 @@
 {% block content %}
   <h2>{{ category.name|translate:language_preference }} Products</h2>  <!-- Translates category name -->
 
-  <div class="product-grid">
+  <div class="category-cards">
     {% for product in products %}
       <div class="card">
         {% if product.image %}

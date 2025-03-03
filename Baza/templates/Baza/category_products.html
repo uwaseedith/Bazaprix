@@ -7,7 +7,7 @@
 {% block content %}
   <h2>{{ category.name|translate:language_preference }} Products</h2>  <!-- Translates category name -->
 
-  <div class="product-grid">
+  <div class="category-cards">
     {% for product in products %}
       <div class="card">
         {% if product.image %}
@@ -19,7 +19,8 @@
           <h5 class="card-title">{{ product.name|translate:language_preference }}</h5>  <!-- Translates product name -->
           <p class="card-text">{{ product.description|translate:language_preference|truncatewords:10 }}</p>  <!-- Translates product description -->
           <p class="card-text"><strong>{% trans 'Price:' %}</strong> {{ product.price }} {{ product.currency }}</p>  <!-- Translates static text "Price:" -->
-          <a href="{% url 'product_detail' product.id %}" class="btn btn-primary">{{ 'View Details'|translate:language_preference }}</a>  <!-- Translates static text "View Details" -->
+          <a href="{% url 'product_detail' product.id %}" class="btn btn-primary">{{ 'View Details'|translate:language_preference }}</a> 
+          <a href="{% url 'update_product' product.id %}" class="btn btn-secondary">{{ 'Update Product'|translate:language_preference }}</a> <!-- Translates static text "View Details" -->
 
           {% if product.vendor == request.user.vendor %}
             <form method="post" action="{% url 'delete_product' product.id %}" style="display:inline;">

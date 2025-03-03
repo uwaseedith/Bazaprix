@@ -4,9 +4,42 @@
 {% block content %}
   <h2>{{ "Welcome to BazaPrix!"|translate:language_preference }}</h2>
   <p>{{ "Your one-stop platform for comparing prices on essential goods."|translate:language_preference }}</p>
-  <p>
-    If you're interested in exploring our services, please 
-    <a href="{% url 'signup' %}">{{ "Sign Up"|translate:language_preference }}</a> or 
-    <a href="{% url 'login' %}">{{ "Login"|translate:language_preference }}</a>.
-  </p>
+
+  <section>
+    <h3>{{ "Popular Categories 🛍️" | translate:language_preference }}</h3>
+    <div class="category-cards">
+      <div class="card">
+        <h4>{{ "Food 🍔🍔🍔" | translate:language_preference }}</h4>
+        <p>{{ "Compare the best prices on food items from trusted vendors." | translate:language_preference }}</p>
+        <a href="{% url 'signup' %}" class="btn btn-secondary">{{ "Explore Food Products 🥗🥗🥗" | translate:language_preference }}</a>
+      </div>
+      <div class="card">
+        <h4>{{ "Electronics 📱" | translate:language_preference }}</h4>
+        <p>{{ "Find the best deals on electronics, gadgets, and accessories💻." | translate:language_preference }}</p>
+        <a href="{% url 'signup' %}" class="btn btn-secondary">{{ "Explore Electronics 💻📱🎧" | translate:language_preference }}</a>
+      </div>
+      <div class="card">
+        <h4>{{ "Health & Beauty💅💅" | translate:language_preference }}</h4>
+        <p>{{ "Discover affordable health and beauty products to enhance your lifestyle💅💅💖." | translate:language_preference }}</p>
+        <a href="{% url 'signup' %}" class="btn btn-secondary">{{ "Explore Health & Beauty💅💅💖🧴" | translate:language_preference }}</a>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h3>{{ "Get Started🚀" | translate:language_preference }}</h3>
+    <p>{{ "Ready to start saving? Sign up to track prices, compare products, and receive alerts🔔🔔!" | translate:language_preference }}</p>
+    <p>
+      If you're interested in exploring our services, please 
+      <a href="{% url 'signup' %} ">{{ "Sign Up📝" | translate:language_preference }}</a> or 
+      <a href="{% url 'login' %}">{{ "Login🔑" | translate:language_preference }}</a>.
+    </p>
+  </section>
+
+  <section>
+    <h3>{{ "Need Help?💬" | translate:language_preference }}</h3>
+    <p>{{ "Our support team is here to assist you with any questions or concerns📞." | translate:language_preference }}</p>
+    <p>{{ "Feel free to reach out to us at any time✨!" | translate:language_preference }}</p>
+    <a href="{% url 'contact_us' %}" class="btn btn-primary">{{ "Contact Support" | translate:language_preference }}</a>
+  </section>
 {% endblock %}

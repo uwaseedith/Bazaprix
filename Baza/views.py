@@ -162,13 +162,13 @@ def signup(request):
 
                 # Send an email to the new user to confirm their registration as a vendor
                 subject_user = "Welcome to BazaPrix as a Vendor!"
-                message_user = f"Hello {full_name},\n\nThank you for registering as a vendor with BazaPrix. You can now manage your products and interact with consumers. Visit your profile at {get_current_site(request).domain}/vendor/{user.id}/ to start."
+                message_user = f"Hello {full_name},\n\nThank you for registering as a vendor with BazaPrix. You can now manage your products and interact with consumers. Visit your profile at BazaPrix."
 
             else:
                 # Send a notification to all vendors that a new consumer has signed up
                 vendors = Vendor.objects.all()  # Assuming vendors need to be notified
                 subject = f"New Consumer Registered: {full_name}"
-                message = f"Hello, a new consumer has signed up: {full_name}.\n\nCheck out their profile at {get_current_site(request).domain}/consumer/{user.id}/"
+                message = f"Hello, a new consumer has signed up: {full_name}.\n\nCheck out their profile at BazaPrix"
                 
                 for vendor in vendors:
                     send_mail(
@@ -181,7 +181,7 @@ def signup(request):
 
                 # Send an email to the new user to confirm their registration as a consumer
                 subject_user = "Welcome to BazaPrix as a Consumer!"
-                message_user = f"Hello {full_name},\n\nThank you for signing up as a consumer with BazaPrix. You can now explore products, vendors, and more. Visit your profile at {get_current_site(request).domain}/consumer/{user.id}/ to get started."
+                message_user = f"Hello {full_name},\n\nThank you for signing up as a consumer with BazaPrix. You can now explore products, vendors, and more. Visit your profile at BazaPrix to get started."
 
             # Send the email to the new user
             send_mail(
@@ -313,6 +313,18 @@ def consumer_dashboard(request):
     price_alerts = request.user.price_alerts.filter(seen=False).order_by('-created_at')
     transactions = Transaction.objects.filter(user=request.user).order_by('-transaction_date')
 
+    # Send email if there are new price alerts
+    if price_alerts.exists():
+        subject = "New Price Alerts for Your Saved Products"
+        message = "You have new price alerts for your saved products on BazaPrix. Check your dashboard for the latest updates."
+        send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            [request.user.email],
+            fail_silently=False,
+        )
+
     # Handle selected product and price history
     selected_product_id = request.GET.get('product_id')
     selected_product = None
@@ -359,7 +371,7 @@ def add_product(request):
              # Send an email to all consumers who are following this vendor
             consumers = Consumer.objects.all()
             subject = f"New Product Added: {product.name}"
-            message = f"Hello, a new product, {product.name}, has been added by {product.vendor.business_name}.\n\nCheck it out here: {get_current_site(request).domain}/product/{product.id}/"
+            message = f"Hello, a new product, {product.name}, has been added by {product.vendor.business_name}. Check it out in the Platform"
             
             for consumer in consumers:
                 send_mail(
@@ -528,6 +540,7 @@ def vendor_detail(request, vendor_id):
 
 @login_required
 def update_product(request, product_id):
+    # Retrieve the product and ensure the logged-in user is the vendor of the product
     product = get_object_or_404(Product, id=product_id, vendor=request.user.vendor)
     
     if request.method == "POST":
@@ -537,8 +550,20 @@ def update_product(request, product_id):
             return redirect('vendor_dashboard')  
     else:
         form = ProductForm(instance=product)
-        
-    return render(request, 'Baza/update_product.html', {'form': form, 'product': product})
+    
+    # Get the language preference for the logged-in vendor
+    language_preference = request.user.vendor.language_preference if hasattr(request.user, 'vendor') else 'en'
+
+    # Add vendor info to the context
+    context = {
+        'form': form,
+        'product': product,
+        'language_preference': language_preference,  # Pass language preference to the template
+        'vendor': product.vendor,  # Pass the vendor who uploaded the product
+    }
+    
+    return render(request, 'Baza/update_product.html', context)
+
 
 @login_required
 def delete_product(request, product_id):
@@ -546,7 +571,7 @@ def delete_product(request, product_id):
     
     if request.method == "POST":
         product.delete()
-        return redirect('vendor_dashboard')  
+        return redirect('product_list')  
     
     return render(request, 'Baza/delete_product_confirm.html', {'product': product})
 
@@ -583,6 +608,26 @@ def mark_vendor_alert_seen(request, alert_id):
 def price_comparison(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     price_updates = PriceUpdate.objects.filter(product=product).order_by('vendor__business_name')
+
+    # Check if there's a new price update (assuming you want to notify users about price updates)
+    new_price_update = price_updates.last()  # Get the latest price update
+
+    if new_price_update:
+        consumers = Consumer.objects.all()  # You can also filter specific consumers who might be following the vendor or the product
+        subject = f"New Price Update for {product.name}"
+        message = f"The price for {product.name} has been updated.\n\n" \
+                  f"New Price: {new_price_update.price} {product.currency}\n" \
+                  f"Check it out here: {request.build_absolute_uri(product.get_absolute_url())}"
+
+        # Send email to each consumer
+        for consumer in consumers:
+            send_mail(
+                subject,
+                message,
+                settings.DEFAULT_FROM_EMAIL,  # Replace with your email address
+                [consumer.user.email],
+                fail_silently=False,
+            )
     return render(request, 'Baza/price_comparison.html', {'product': product, 'price_updates': price_updates})
 
 def price_history(request, product_id):
