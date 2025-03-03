@@ -1,16 +1,14 @@
 {
-    "version": 2,
-    "rootDirectory": "BazaPrix",
     "builds": [{
-        "src": "wsgi.py",
-        "use": "@vercel/python",
-        "config": { "maxLambdaSize": "15mb", "runtime": "python" }
+      "src": "BazaPrix/wsgi.py",
+      "use": "@vercel/python",
+      "config": { "maxLambdaSize": "15mb", "runtime": "python" }
     }],
     "routes": [
-        {
-            "src": "/(.*)",
-            "dest": "wsgi.py"
-        }
+      {
+        "src": "/(.*)",
+        "dest": "BazaPrix/wsgi.py"
+      }
     ]
   }
   
