@@ -80,16 +80,17 @@ WSGI_APPLICATION = 'BazaPrix.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'bazaprix_db',         
-        'USER': 'root',       
-        'PASSWORD': 'Uwaseedith@2000',  
-        'HOST': 'localhost',
+        'NAME': 'Uwase$bazaprix_db',
+        'USER': 'Uwase',
+        'PASSWORD': 'Uwaseedith',
+        'HOST': 'Uwase.mysql.pythonanywhere-services.com',
         'PORT': '3306',
         'OPTIONS': {
-            'charset': 'utf8mb4',
-        },
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+        }
     }
 }
+
 
 
 # Password validation
