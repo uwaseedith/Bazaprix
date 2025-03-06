@@ -3,10 +3,12 @@
 {% load custom_filters %}
 
 {% block content %}
-  <h2>{{ "Add a New Product"|translate:language_preference }}</h2>
-  <form method="post" enctype="multipart/form-data">
+  <h2 style="text-align: center; margin-bottom: 10px; margin-top: 0;">{{ "Add a New Product"|translate:language_preference }}</h2>
+  <div style="display: flex; justify-content: center; align-items: center;">
+    <form method="post" enctype="multipart/form-data" style="max-width: 600px; width: 100%; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
       {% csrf_token %}
       {{ form.as_p }}
       <button type="submit">{{ "Add Product"|translate:language_preference }}</button>
-  </form>
+    </form>
+  </div>
 {% endblock %}

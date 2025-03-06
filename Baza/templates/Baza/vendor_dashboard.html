@@ -7,7 +7,7 @@
   <ul>
     {% for note in notifications %}
       <li>
-         {{ note.message }}<br>
+         {{ note.message|translate:language_preference }}<br>
          <small>{{ note.created_at|date:"SHORT_DATETIME_FORMAT" }}</small>
          <form method="post" action="{% url 'mark_notification_seen' note.id %}">
            {% csrf_token %}

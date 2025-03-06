@@ -3,34 +3,38 @@
 {% load custom_filters %}
 
 {% block content %}
-<h2>{{ "Vendor Profile"|translate:language_preference }}</h2>
+<h2 style="text-align: center; margin-bottom: 10px; margin-top: 0;">{{ "Vendor Profile"|translate:language_preference }}</h2>
 
-<div>
-  <p><strong>{{ "Business Name:"|translate:language_preference }}</strong> {{ vendor.business_name }}</p>
-  <p><strong>{{ "Market (Where you work):"|translate:language_preference }}</strong> {{ vendor.location }}</p>
-  <p><strong>{{ "Contact Info:"|translate:language_preference }}</strong> {{ vendor.contact_info }}</p>
+<div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px;">
+  <div style="max-width: 800px; width: 100%; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
+    <p><strong>{{ "Business Name:"|translate:language_preference }}</strong> {{ vendor.business_name }}</p>
+    <p><strong>{{ "Market (Where you work):"|translate:language_preference }}</strong> {{ vendor.location }}</p>
+    <p><strong>{{ "Contact Info:"|translate:language_preference }}</strong> {{ vendor.contact_info }}</p>
+  </div>
 </div>
 
-<div>
-  <h3>{{ "Feedbacks"|translate:language_preference }}</h3>
-  <ul>
-    {% for feedback in vendor.feedbacks.all %}
-      <li>
-        <strong>{{ "Anonymous User"|translate:language_preference }}</strong> {{ "rated"|translate:language_preference }}
-        {% for i in 5|range_filter %}
-          {% if i < feedback.rating %}
-            <span class="filled-star">⭐</span>  
-          {% else %}
-            <span class="empty-star">☆</span>  
-          {% endif %}
-        {% endfor %}
-        <br>
-        {{ feedback.comment }}
-      </li>
-    {% empty %}
-      <li>{{ "No feedback available."|translate:language_preference }}</li>
-    {% endfor %}
-  </ul>
+<div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px;">
+  <div style="max-width: 800px; width: 100%; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
+    <h3>{{ "Feedbacks"|translate:language_preference }}</h3>
+    <ul>
+      {% for feedback in vendor.feedbacks.all %}
+        <li>
+          <strong>{{ "Anonymous User"|translate:language_preference }}</strong> {{ "rated"|translate:language_preference }}
+          {% for i in 5|range_filter %}
+            {% if i < feedback.rating %}
+              <span class="filled-star">⭐</span>  
+            {% else %}
+              <span class="empty-star">☆</span>  
+            {% endif %}
+          {% endfor %}
+          <br>
+          {{ feedback.comment }}
+        </li>
+      {% empty %}
+        <li>{{ "No feedback available."|translate:language_preference }}</li>
+      {% endfor %}
+    </ul>
+  </div>
 </div>
 
 {% endblock %}

@@ -3,33 +3,38 @@
 {% load custom_filters %}  <!-- Load translation library here -->
 
 {% block content %}
-<h2>{{ "Login"|translate:language_preference }}</h2>  <!-- Translates the "Login" heading -->
-<form method="post">
-    {% csrf_token %}
-    {{ form.non_field_errors }}
-    
-    <div>
-        {{ form.username.label_tag }}<br>
-        {{ form.username }}
-        {{ form.username.errors }}
+  <h2 style="text-align: center; margin-bottom: 10px; margin-top: 0;">{{ "Login"|translate:language_preference }}</h2>  <!-- Translates the "Login" heading -->
+
+  <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px;">
+    <div style="max-width: 800px; width: 100%; padding: 40px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box;">
+      <form method="post">
+          {% csrf_token %}
+          {{ form.non_field_errors }}
+          
+          <div style="margin-bottom: 20px;">
+              {{ form.username.label_tag }}<br>
+              {{ form.username }}
+              {{ form.username.errors }}
+          </div>
+          
+          <div style="margin-bottom: 20px;">
+              {{ form.password.label_tag }}<br>
+              {{ form.password }}
+              {{ form.password.errors }}
+          </div>
+          
+          <div style="margin-bottom: 20px;">
+              <label>{{ "User Type:"|translate:language_preference }}</label><br>  <!-- Translates the "User Type:" label -->
+              {% for radio in form.user_type %}
+                  <div>
+                      {{ radio.tag }} {{ radio.choice_label }}
+                  </div>
+              {% endfor %}
+              {{ form.user_type.errors }}
+          </div>
+          
+          <button type="submit" style="width: 100%; padding: 15px; font-size: 16px;">{{ "Login"|translate:language_preference }}</button>  <!-- Translates the "Login" button -->
+      </form>
     </div>
-    
-    <div>
-        {{ form.password.label_tag }}<br>
-        {{ form.password }}
-        {{ form.password.errors }}
-    </div>
-    
-    <div>
-        <label>{{ "User Type:"|translate:language_preference }}</label><br>  <!-- Translates the "User Type:" label -->
-        {% for radio in form.user_type %}
-            <div>
-                {{ radio.tag }} {{ radio.choice_label }}
-            </div>
-        {% endfor %}
-        {{ form.user_type.errors }}
-    </div>
-    
-    <button type="submit">{{ "Login"|translate:language_preference }}</button>  <!-- Translates the "Login" button -->
-</form>
+  </div>
 {% endblock %}

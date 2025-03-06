@@ -3,16 +3,21 @@
 {% load custom_filters %}  <!-- Load translation library here -->
 
 {% block content %}
-  <h2>{{ "All Vendors"|translate:language_preference }}</h2>  <!-- Translates the "All Vendors" heading -->
-  <ul>
-    {% for vendor in vendors %}
-      <li>
-        <a href="{% url 'vendor_detail' vendor.id %}">
-          {{ vendor.business_name}}  <!-- Translates vendor business name -->
-        </a>
-      </li>
-    {% empty %}
-      <li>{{ "No vendors found."|translate:language_preference }}</li>  <!-- Translates the "No vendors found." message -->
-    {% endfor %}
-  </ul>
+  <h2 style="text-align: center; margin-bottom: 10px; margin-top: 0;">{{ "All Vendors"|translate:language_preference }}</h2>  <!-- Translates the "All Vendors" heading -->
+
+  <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px;">
+    <div style="max-width: 800px; width: 100%; padding: 20px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box;">
+      <ul style="list-style-type: none; padding: 0;">
+        {% for vendor in vendors %}
+          <li style="margin-bottom: 10px;">
+            <a href="{% url 'vendor_detail' vendor.id %}" style="text-decoration: none; color: #007bff; font-weight: bold;">
+              {{ vendor.business_name}}  <!-- Translates vendor business name -->
+            </a>
+          </li>
+        {% empty %}
+          <li>{{ "No vendors found."|translate:language_preference }}</li>  <!-- Translates the "No vendors found." message -->
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
 {% endblock %}

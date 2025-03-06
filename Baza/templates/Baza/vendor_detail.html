@@ -3,34 +3,39 @@
 {% load custom_filters %}  <!-- Load translation library here -->
 
 {% block content %}
-  <h2>{{ "Vendor Profile:"|translate:language_preference }} {{ vendor.business_name }}</h2>  <!-- Translates the "Vendor Profile:" heading -->
+  <h2 style="text-align: center; margin-bottom: 20px; margin-top: 0;">{{ "Vendor Profile:"|translate:language_preference }} {{ vendor.business_name }}</h2>  <!-- Translates the "Vendor Profile:" heading -->
 
-  <div>
-    <p><strong>{{ "Market (Where they work):"|translate:language_preference }}</strong> {{ vendor.location }}</p>  <!-- Translates static text "Market (Where they work):" -->
-    <p><strong>{{ "Contact Info:"|translate:language_preference }}</strong> {{ vendor.contact_info }}</p>  <!-- Translates static text "Contact Info:" -->
+  <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px;">
+    <div style="max-width: 800px; width: 100%; padding: 20px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box;">
+      <p><strong>{{ "Market (Where they work):"|translate:language_preference }}</strong> {{ vendor.location }}</p>  <!-- Translates static text "Market (Where they work):" -->
+      <p><strong>{{ "Contact Info:"|translate:language_preference }}</strong> {{ vendor.contact_info }}</p>  <!-- Translates static text "Contact Info:" -->
+    </div>
   </div>
   
-  <div>
-    <h3>{{ "Feedbacks"|translate:language_preference }}</h3>  <!-- Translates "Feedbacks" heading -->
-    <ul>
-      {% for feedback in vendor.feedbacks.all %}
-        <li>
-          <strong>{{ "Anonymous User"|translate:language_preference }}</strong> {{ "rated"|translate:language_preference }} 
-          {% for i in range_of_stars %}
-            {% if i <= feedback.rating %}
-              <span class="filled-star">⭐</span>  <!-- Filled star -->
-            {% else %}
-              <span class="empty-star">☆</span>  <!-- Empty star -->
-            {% endif %}
-          {% endfor %}
-          <br>
-          {{ feedback.comment|translate:language_preference }}
-        </li>
-      {% empty %}
-        <li>{{ "No feedback available yet."|translate:language_preference }}</li>  <!-- Translates the "No feedback available yet." message -->
-      {% endfor %}
-    </ul>
+  <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px;">
+    <div style="max-width: 800px; width: 100%; padding: 20px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box;">
+      <h3 style="text-align: center;">{{ "Feedbacks"|translate:language_preference }}</h3>  <!-- Translates "Feedbacks" heading -->
+      <ul style="list-style-type: none; padding: 0;">
+        {% for feedback in vendor.feedbacks.all %}
+          <li style="margin-bottom: 15px;">
+            <strong>{{ "Anonymous User"|translate:language_preference }}</strong> {{ "rated"|translate:language_preference }}
+            <div>
+              {% for i in range_of_stars %}
+                {% if i <= feedback.rating %}
+                  <span class="filled-star" style="color: gold;">⭐</span>  <!-- Filled star -->
+                {% else %}
+                  <span class="empty-star" style="color: lightgray;">☆</span>  <!-- Empty star -->
+                {% endif %}
+              {% endfor %}
+            </div>
+            <p>{{ feedback.comment|translate:language_preference }}</p>
+          </li>
+        {% empty %}
+          <li style="text-align: center;">{{ "No feedback available yet."|translate:language_preference }}</li>  <!-- Translates the "No feedback available yet." message -->
+        {% endfor %}
+      </ul>
+    </div>
   </div>
-  
-  <p><a href="{% url 'vendor_list' %}">{{ "Back to Vendor List"|translate:language_preference }}</a></p>  <!-- Translates the "Back to Vendor List" link -->
+
+  <p style="text-align: center;"><a href="{% url 'vendor_list' %}" style="color: #007bff;">{{ "Back to Vendor List"|translate:language_preference }}</a></p>  <!-- Translates the "Back to Vendor List" link -->
 {% endblock %}

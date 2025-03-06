@@ -6,11 +6,75 @@
   <meta charset="UTF-8">
   <title>{{ "BazaPrix - Vendor Dashboard"|translate:language_preference }}</title>
   <link rel="stylesheet" href="{% static 'Baza/css/styles.css' %}">
+  <style>
+    /* Header layout using flexbox */
+    .header-top {
+      display: flex; /* Use flexbox to align items horizontally */
+      align-items: center; /* Vertically center the items */
+      justify-content: space-between; /* Space out the items: logo on left, nav on right */
+      padding: 10px 20px; /* Add padding for better spacing */
+    }
+    
+    /* Circular logo styling */
+    .logo {
+      width: 50px; /* Adjust size of the logo */
+      height: 50px; /* Make the height equal to width for a perfect circle */
+      border-radius: 50%; /* Make the image round */
+      object-fit: cover; /* Ensure the image scales correctly inside the circle */
+      margin-right: 10px; /* Add space between the logo and title */
+    }
+
+    /* Styling for the navigation links */
+    .nav-links {
+      display: flex;
+      gap: 15px; /* Space between the links */
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #007bff; /* Link color */
+      font-weight: bold; /* Make links bold */
+    }
+
+    /* Remove margin from the heading */
+    h1 {
+      margin: 0; /* Ensure there's no margin around the title */
+      display: flex; /* Align logo and text together */
+      align-items: center; /* Vertically center the text and logo */
+    }
+
+    /* Styling for the search form */
+    .search-form {
+      display: flex;
+      justify-content: center; /* Center the search form */
+      margin-top: 20px;
+    }
+
+    .search-form input {
+      padding: 8px;
+      width: 200px;
+      margin-right: 10px;
+    }
+
+    .search-form button {
+      padding: 8px 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
   <header>
     <div class="header-top">
-      <h1>{{ "BazaPrix"|translate:language_preference }}</h1>
+      <!-- Circular Logo and Title -->
+      <h1>
+        <img src="{% static 'Baza/images/logo.png.webp' %}" alt="BazaPrix Logo" class="logo">
+        {{ "BazaPrix"|translate:language_preference }}
+      </h1>
+
+      <!-- Navigation Links -->
       <nav class="nav-links">
         <a href="{% url 'vendor_dashboard' %}">{{ "Dashboard"|translate:language_preference }}</a>
         <a href="{% url 'vendor_profile' %}">{{ "Profile"|translate:language_preference }}</a>
@@ -21,6 +85,7 @@
       </nav>
     </div>
 
+    <!-- Search Bar -->
     <div class="header-bottom">
       <form class="search-form" action="{% url 'product_search' %}" method="get">
         <input type="search" placeholder="{{ 'Search products...'|translate:language_preference }}" aria-label="Search" name="q">

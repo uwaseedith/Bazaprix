@@ -2,69 +2,84 @@
 {% load custom_filters %}
 
 {% block content %}
-<h2>{{ "Sign Up"|translate:language_preference }}</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.non_field_errors }}
-    <div>
-        {{ form.username.label_tag }}<br>
-        {{ form.username }}
-        {{ form.username.errors }}
-    </div>
-    <div>
-        {{ form.full_name.label_tag }}<br>
-        {{ form.full_name }}
-        {{ form.full_name.errors }}
-    </div>
-    <div>
-        {{ form.email.label_tag }}<br>
-        {{ form.email }}
-        {{ form.email.errors }}
-    </div>
-    <div>
-        <label>{{ "User Type:"|translate:language_preference }}</label><br>
-        {% for radio in form.user_type %}
-            <div>
-                {{ radio.tag }} {{ radio.choice_label }}
-            </div>
-        {% endfor %}
-        {{ form.user_type.errors }}
-    </div>
-    <!-- Vendor-only fields -->
-    <div id="vendor_fields" style="display: none;">
-        <div>
-            {{ form.phone_number.label_tag }}<br>
-            {{ form.phone_number }}
-            {{ form.phone_number.errors }}
-        </div>
-        <div>
-            {{ form.market.label_tag }}<br>
-            {{ form.market }}
-            {{ form.market.errors }}
-        </div>
-    </div>
-    <div>
-        {{ form.password1.label_tag }}<br>
-        {{ form.password1 }}
-        {{ form.password1.errors }}
-    </div>
-    <div>
-        {{ form.password2.label_tag }}<br>
-        {{ form.password2 }}
-        {{ form.password2.errors }}
-    </div>
-    <div>
-        {{ form.terms_accepted }} {{ "I accept the"|translate:language_preference }}
-        <a href="#" id="terms_link" target="_blank">{{ "Terms and Conditions"|translate:language_preference }}</a>
-        {{ form.terms_accepted.errors }}
-    </div>
-    <button type="submit">{{ "Sign Up"|translate:language_preference }}</button>
-</form>
+  <h2 style="text-align: center; margin-bottom: 10px; margin-top: 0;">{{ "Sign Up"|translate:language_preference }}</h2>
 
-<p>You already have an account! 
+  <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px;">
+    <div style="max-width: 800px; width: 100%; padding: 40px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box;">
+      <form method="post">
+          {% csrf_token %}
+          {{ form.non_field_errors }}
+          
+          <div style="margin-bottom: 20px;">
+              {{ form.username.label_tag }}<br>
+              {{ form.username }}
+              {{ form.username.errors }}
+          </div>
+          
+          <div style="margin-bottom: 20px;">
+              {{ form.full_name.label_tag }}<br>
+              {{ form.full_name }}
+              {{ form.full_name.errors }}
+          </div>
+          
+          <div style="margin-bottom: 20px;">
+              {{ form.email.label_tag }}<br>
+              {{ form.email }}
+              {{ form.email.errors }}
+          </div>
+          
+          <div style="margin-bottom: 20px;">
+              <label>{{ "User Type:"|translate:language_preference }}</label><br>
+              {% for radio in form.user_type %}
+                  <div>
+                      {{ radio.tag }} {{ radio.choice_label }}
+                  </div>
+              {% endfor %}
+              {{ form.user_type.errors }}
+          </div>
+          
+          <!-- Vendor-only fields -->
+          <div id="vendor_fields" style="display: none; margin-bottom: 20px;">
+              <div>
+                  {{ form.phone_number.label_tag }}<br>
+                  {{ form.phone_number }}
+                  {{ form.phone_number.errors }}
+              </div>
+              <div>
+                  {{ form.market.label_tag }}<br>
+                  {{ form.market }}
+                  {{ form.market.errors }}
+              </div>
+          </div>
+          
+          <div style="margin-bottom: 20px;">
+              {{ form.password1.label_tag }}<br>
+              {{ form.password1 }}
+              {{ form.password1.errors }}
+          </div>
+          
+          <div style="margin-bottom: 20px;">
+              {{ form.password2.label_tag }}<br>
+              {{ form.password2 }}
+              {{ form.password2.errors }}
+          </div>
+          
+          <div style="margin-bottom: 20px;">
+              {{ form.terms_accepted }} {{ "I accept the"|translate:language_preference }}
+              <a href="#" id="terms_link" target="_blank">{{ "Terms and Conditions"|translate:language_preference }}</a>
+              {{ form.terms_accepted.errors }}
+          </div>
+          
+          <button type="submit" style="width: 100%; padding: 15px; font-size: 16px;">{{ "Sign Up"|translate:language_preference }}</button>
+      </form>
+    </div>
+  </div>
+
+  <p style="text-align: center;">You already have an account! 
     <a href="{% url 'login' %}">Login</a>
-</p>
-<script>
+  </p>
+
+  <script>
     // JavaScript to toggle vendor-specific fields and update the terms link
     function toggleVendorFields() {
         const radios = document.getElementsByName("user_type");
@@ -90,5 +105,5 @@
     });
     // Set initial state on page load
     window.onload = toggleVendorFields;
-</script>
+  </script>
 {% endblock %}

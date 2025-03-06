@@ -9,8 +9,8 @@
   <div class="alert-list">
     {% for alert in price_alerts %}
       <div class="alert-card">
-        <strong>{{ alert.product.name }}</strong> 
-        {{ "suggested price has"|translate:language_preference }} {{ alert.change_type }} 
+        <strong>{{ alert.product.name|translate:language_preference }}</strong> 
+        {{ "suggested price has"|translate:language_preference }} {{ alert.change_type|translate:language_preference }} 
         {{ "by"|translate:language_preference }} {{ alert.change_amount|floatformat:2 }} 
         {{ "from"|translate:language_preference }} {{ alert.previous_price }} 
         {{ "to"|translate:language_preference }} {{ alert.new_price }}<br>
@@ -48,12 +48,12 @@
   <h2>{{ "Saved Products"|translate:language_preference }}</h2>  <!-- Translates the section heading -->
   <div class="category-cards">
     {% for saved in saved_products %}
-      <div class="card">
+      <div class="card" style="width: 18rem; margin: 10px;">
         <a href="{% url 'cproduct_list' %}">
           {% if saved.product.image %}
-            <img src="{{ saved.product.image.url }}" class="card-img-top" alt="{{ saved.product.name }}">
+            <img src="{{ saved.product.image.url }}" class="card-img-top" alt="{{ saved.product.name }}" style="height: 200px; object-fit: cover;">
           {% else %}
-            <img src="{% static 'Baza/images/default.jpg' %}" class="card-img-top" alt="{{ 'No image available'|translate:language_preference }}">
+            <img src="{% static 'Baza/images/default.jpg' %}" class="card-img-top" alt="{{ 'No image available'|translate:language_preference }}" style="height: 200px; object-fit: cover;">
           {% endif %}
         </a>
         <div class="card-body">
@@ -65,6 +65,7 @@
       <p>{{ "You have no saved products yet."|translate:language_preference }}</p>  <!-- Translates the no data message -->
     {% endfor %}
   </div>
+  
 </section>
 
 {% endblock %}
