@@ -113,3 +113,9 @@ class AIProductGenerationForm(forms.Form):
 class AIPriceInfoGenerationForm(forms.Form):
     country = forms.ChoiceField(choices=COUNTRY_CHOICES, label="Select Country")
     category = forms.ModelChoiceField(queryset=Category.objects.all(), label="Select Product Category")
+
+class AISuggestedPriceForm(forms.Form):
+    
+    country = forms.ChoiceField(choices=COUNTRY_CHOICES, label="Select Country")
+    category = forms.ModelChoiceField(queryset=Category.objects.all(), label="Product Category", widget=forms.Select(attrs={'class': 'form-control'}))
+    product_name = forms.CharField(max_length=255, label="Product Name", widget=forms.TextInput(attrs={'class': 'form-control'}))

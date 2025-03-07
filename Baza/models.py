@@ -202,3 +202,13 @@ class PriceInformation(models.Model):
 
     def __str__(self):
         return f"Price Info for {self.category.name} in {self.country}"
+    
+class AISuggestedPrice(models.Model):
+    country = models.CharField(max_length=100)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    product_name = models.CharField(max_length=255)
+    suggested_price = models.DecimalField(max_digits=10, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.product_name} ({self.country}) - {self.suggested_price}"

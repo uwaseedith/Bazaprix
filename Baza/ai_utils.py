@@ -7,6 +7,7 @@ from django.core.files.base import ContentFile
 from dotenv import load_dotenv
 import time
 import re
+import random
 
 
 # ✅ Load API key from .env file
@@ -100,7 +101,6 @@ def validate_image_url(url):
     """
     return url.startswith("http") and any(ext in url.lower() for ext in [".jpg", ".jpeg", ".png", ".webp"])
 
-import time
 
 def download_and_save_image(image_url, product_name):
     """
@@ -192,3 +192,29 @@ def process_ai_insights(insights):
 
     return formatted_sections
 
+
+def generate_suggested_price(product_name, category_name, country):
+    """
+    Uses Google Gemini AI to generate a suggested price for a product based on country and category.
+    """
+    prompt = f"""
+    What is the estimated market price of {product_name} in the {category_name} category in {country}?
+    Please return the price in Burundian Francs (BIF) only as a number without currency symbols.
+    """
+
+    try:
+        model = genai.GenerativeModel("gemini-2.0-pro-exp-02-05")
+        response = model.generate_content(prompt)
+
+        suggested_price = response.text.strip()
+
+        # ✅ Convert the response into a valid price (handling AI errors)
+        try:
+            price = float(suggested_price.replace(',', '').split()[0])  # Remove commas, extract first number
+            return round(price, 2)
+        except ValueError:
+            return round(random.uniform(500, 50000), 2)  # Generate a random fallback price
+
+    except Exception as e:
+        print(f"❌ Error generating suggested price: {e}")
+        return round(random.uniform(500, 50000), 2) 

@@ -4,18 +4,36 @@
 {% load static %}
 
 {% block content %}
-  <h2 class="text-center mt-4">{{ "AI-Generated Price Information"|translate:language_preference }}</h2>
+
+<div class="container text-center mt-5">
+  <!-- ✅ Centered Title -->
+  <h2 class="display-4 text-primary font-weight-bold">
+    {{ "AI-Generated Price Information"|translate:language_preference }}
+  </h2>
+
+  <!-- ✅ Well-Styled Suggested Prices Button -->
+  <div class="mt-4">
+    <a href="{% url 'vsuggested_price_list' %}" class="btn btn-lg btn-warning shadow-lg px-5 py-3">
+      <i class="fas fa-tags"></i> {{ "Suggested Prices"|translate:language_preference }}
+    </a>
+  </div>
+</div>
+<div class="text-center my-4">
+  <a href="{% url 'generate_price_info' %}" class="btn btn-lg btn-info">
+    <i class="fas fa-search-dollar"></i> {{ "Do you want to know about prices in the region?"|translate:language_preference }}
+  </a>
+</div>
 
   <div class="row">
     {% for info in price_info_list %}
       <div class="col-md-4">
         <div class="card shadow-sm mb-4">
           <div class="card-body">
-            <h4 class="card-title"><strong>{{ "Country"|translate:language_preference }}:</strong> {{ info.country }}</h4>
-            <h5 class="card-subtitle mb-2 text-muted"><strong>{{ "Category"|translate:language_preference }}:</strong> {{ info.category.name }}</h5>
+            <h4 class="card-title"><strong>{{ "Country"|translate:language_preference }}:</strong> {{ info.country|translate:language_preference }}</h4>
+            <h5 class="card-subtitle mb-2 text-muted"><strong>{{ "Category"|translate:language_preference }}:</strong> {{ info.category.name|translate:language_preference }}</h5>
             
             <!-- ✅ Show the extracted 'Overall Trend' section -->
-            <p class="card-text"><strong>{{ "Overall Trend:"|translate:language_preference }}</strong> {{ info.overall_trend }}</p>
+            <p class="card-text"><strong>{{ "Overall Trend:"|translate:language_preference }}</strong> {{ info.overall_trend|translate:language_preference }}</p>
 
             <!-- Buttons Section -->
             <div class="d-flex justify-content-between">

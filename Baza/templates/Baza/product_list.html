@@ -3,6 +3,17 @@
 
 {% block content %}
 
+<div class="container text-center mt-4">
+    <!-- ✅ Styled Informational Text -->
+    <p class="lead fw-bold text-secondary">
+      <i class="fas fa-newspaper"></i> {{ "Want to know about News about Products in worldwide"|translate:language_preference }}
+    </p>
+  
+    <!-- ✅ Well-Styled Generate AI Product Button -->
+    <a href="{% url 'generate_product' %}" class="btn btn-lg btn-success fw-bold text-white px-5 py-3 shadow">
+      <i class="fas fa-magic"></i> {{ "Generate AI Product"|translate:language_preference }}
+    </a>
+  </div>
 
 <h2>{{ "Product Categories"|translate:language_preference }}</h2>
 <div class="category-cards">

@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Product, Category, Vendor, PriceAlert, PriceUpdate, SavedProduct, Transaction, Feedback, Notification, Consumer, AIProduct, PriceInformation
+from .models import Product, Category, Vendor, PriceAlert, PriceUpdate, SavedProduct, Transaction, Feedback, Notification, Consumer, AIProduct, PriceInformation, AISuggestedPrice
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login
 from .forms import CustomUserCreationForm, CustomAuthenticationForm, ProductForm, RateVendorForm, AIPriceInfoGenerationForm
@@ -16,10 +16,12 @@ from django.conf import settings
 from django.utils.translation import activate
 from django.core.mail import send_mail
 from django.contrib.sites.shortcuts import get_current_site
-from .forms import AIProductGenerationForm
-from .ai_utils import generate_product_details, generate_product_image, generate_price_trends, format_insights, process_ai_insights
+from .forms import AIProductGenerationForm, AISuggestedPriceForm
+from .ai_utils import generate_product_details, generate_product_image, generate_price_trends, format_insights, process_ai_insights, generate_suggested_price
 from django.core.files.base import ContentFile
 import re
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 
 @login_required
@@ -774,20 +776,27 @@ def consumer_category_products(request, category_name):
     category = get_object_or_404(Category, name=category_name)
     
     # Fetch products that belong to this category
-    products = Product.objects.filter(category=category)
-    ai_products = AIProduct.objects.filter(category=category)
+    products = list(Product.objects.filter(category=category))
+    ai_products = list(AIProduct.objects.filter(category=category))
 
-    all_products = list(products) + list(ai_products)
-    
-    # Get the vendor's language preference or default to 'en'
+    # ✅ Ensure `is_ai_product` is set in the model
+    for ai_product in ai_products:
+        ai_product.is_ai_product = True  # Mark AI-generated products
+
+    for product in products:
+        product.is_ai_product = False  # Mark regular products
+
+    all_products = products + ai_products  # Combine the lists
+
+    # ✅ Get consumer's language preference
     language_preference = request.user.consumer.language_preference if hasattr(request.user, 'consumer') else 'en'
 
-    # Activate the language based on the user's preference
+    # ✅ Activate the language based on the user's preference
     translation.activate(language_preference)
 
     context = {
         'category': category,
-        'products': all_products,
+        'products': all_products,  # ✅ Now all products are objects, not dicts
         'language_preference': language_preference,
     }
     
@@ -1060,7 +1069,7 @@ def cgenerate_product_data(request):
             except Exception as e:
                 print(f"❌ Error saving product to database: {e}")
                 messages.error(request, f"❌ Failed to save product to database: {e}")
-                return redirect('generate_product')
+                return redirect('cgenerate_product')
 
             messages.success(request, f"🎉 New AI-generated product added to {category.name}. Notifications sent.")
             return redirect('consumer_category_products', category_name=category.name)
@@ -1326,3 +1335,107 @@ def cprice_information_detail(request, info_id):
     language_preference = request.user.consumer.language_preference if hasattr(request.user, 'consumer') else 'en'
 
     return render(request, 'Baza/cprice_information_detail.html', {'info': info, 'language_preference': language_preference})
+
+def generate_suggested_price_view(request):
+    """
+    View for users to get an AI-suggested price for a product.
+    """
+    if request.method == "POST":
+        form = AISuggestedPriceForm(request.POST)
+        if form.is_valid():
+            country = form.cleaned_data['country']
+            category = form.cleaned_data['category']
+            product_name = form.cleaned_data['product_name']
+
+            # ✅ Get AI-suggested price
+            suggested_price = generate_suggested_price(product_name, category.name, country)
+
+            # ✅ Save the AI-suggested price in the database
+            ai_price = AISuggestedPrice.objects.create(
+                country=country,
+                category=category,
+                product_name=product_name,
+                suggested_price=suggested_price
+            )
+
+            messages.success(request, f"✅ Suggested price for {product_name}: {suggested_price} BIF")
+            return redirect('suggested_price_list')  # Redirect to price list page
+
+    else:
+        form = AISuggestedPriceForm()
+    
+    language_preference = request.user.consumer.language_preference if hasattr(request.user, 'consumer') else 'en'
+
+    return render(request, 'Baza/generate_suggested_price.html', {'form': form, 'language_preference': language_preference})
+
+def suggested_price_list(request):
+    """
+    View to display all AI-generated suggested prices.
+    """
+    suggested_prices = AISuggestedPrice.objects.all()
+
+    language_preference = request.user.consumer.language_preference if hasattr(request.user, 'consumer') else 'en'
+
+    return render(request, 'Baza/suggested_price_list.html', {'suggested_prices': suggested_prices, 'language_preference': language_preference})
+
+def vgenerate_suggested_price_view(request):
+    """
+    View for users to get an AI-suggested price for a product.
+    """
+    if request.method == "POST":
+        form = AISuggestedPriceForm(request.POST)
+        if form.is_valid():
+            country = form.cleaned_data['country']
+            category = form.cleaned_data['category']
+            product_name = form.cleaned_data['product_name']
+
+            # ✅ Get AI-suggested price
+            suggested_price = generate_suggested_price(product_name, category.name, country)
+
+            # ✅ Save the AI-suggested price in the database
+            ai_price = AISuggestedPrice.objects.create(
+                country=country,
+                category=category,
+                product_name=product_name,
+                suggested_price=suggested_price
+            )
+
+            messages.success(request, f"✅ Suggested price for {product_name}: {suggested_price} BIF")
+            return redirect('vsuggested_price_list')  # Redirect to price list page
+
+    else:
+        form = AISuggestedPriceForm()
+        
+    language_preference = request.user.vendor.language_preference if hasattr(request.user, 'vendor') else 'en'
+
+    return render(request, 'Baza/vgenerate_suggested_price.html', {'form': form, 'language_preference': language_preference})
+
+def vsuggested_price_list(request):
+    """
+    View to display all AI-generated suggested prices.
+    """
+    suggested_prices = AISuggestedPrice.objects.all()
+
+    
+    language_preference = request.user.vendor.language_preference if hasattr(request.user, 'vendor') else 'en'
+
+    return render(request, 'Baza/vsuggested_price_list.html', {'suggested_prices': suggested_prices, 'language_preference': language_preference})
+
+def delete_suggested_price(request, price_id):
+    """
+    Deletes an AI-generated suggested price.
+    """
+    price = get_object_or_404(AISuggestedPrice, id=price_id)
+    price.delete()
+    messages.success(request, f"✅ Suggested price for {price.product_name} has been deleted.")
+    return HttpResponseRedirect(reverse('suggested_price_list'))
+
+
+def vdelete_suggested_price(request, price_id):
+    """
+    Deletes an AI-generated suggested price.
+    """
+    price = get_object_or_404(AISuggestedPrice, id=price_id)
+    price.delete()
+    messages.success(request, f"✅ Suggested price for {price.product_name} has been deleted.")
+    return HttpResponseRedirect(reverse('vsuggested_price_list'))

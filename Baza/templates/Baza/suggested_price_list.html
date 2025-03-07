@@ -1,0 +1,51 @@
+{% extends "Baza/consumer_base.html" %}
+{% load custom_filters %}
+{% load i18n %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h2 class="text-center">{{ "AI-Suggested Prices"|translate:language_preference }}</h2>
+    
+    <!-- Generate Suggested Price Button -->
+    <div class="text-center mb-3">
+      <a href="{% url 'generate_suggested_price' %}" class="btn btn-primary">
+        <i class="fas fa-magic"></i> {{ "Generate Price"|translate:language_preference }}
+      </a>
+    </div>
+
+    <table class="table table-striped mt-4">
+      <thead>
+        <tr>
+          <th>{{ "Country"|translate:language_preference }}</th>
+          <th>{{ "Category"|translate:language_preference }}</th>
+          <th>{{ "Product Name"|translate:language_preference }}</th>
+          <th>{{ "Suggested Price (BIF)"|translate:language_preference }}</th>
+          <th>{{ "Actions"|translate:language_preference }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for price in suggested_prices %}
+          <tr>
+            <td>{{ price.country }}</td>
+            <td>{{ price.category.name }}</td>
+            <td>{{ price.product_name }}</td>
+            <td>{{ price.suggested_price }}</td>
+            <td>
+              <!-- Delete Button inside the loop to correctly pass price.id -->
+              <form method="post" action="{% url 'delete_suggested_price' price.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm">
+                  <i class="fas fa-trash-alt"></i> {{ "Delete"|translate:language_preference }}
+                </button>
+              </form>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="5" class="text-center">{{ "No AI-suggested prices available."|translate:language_preference }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

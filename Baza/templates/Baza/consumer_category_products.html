@@ -1,42 +1,69 @@
 {% extends "Baza/consumer_base.html" %}
 {% load custom_filters %}
-{% load i18n %}  <!-- Load translation library here -->
+{% load i18n %}
 {% load static %} 
 
 {% block content %}
+  <div class="container mt-4">
+    <h2 class="text-center">{{ category.name|translate:language_preference }} {{ "Products"|translate:language_preference }}</h2>
 
-<p>{{ "Want to know about News about Products in worldwide"|translate:language_preference}}</p>
-<a href="{% url 'cgenerate_product' %}" class="btn btn-success mb-3">
-  {{ "Generate AI Product"|translate:language_preference }}
-</a>
+    <p class="text-center">
+      {{ "Want to know about News about Products in worldwide"|translate:language_preference }}
+    </p>
 
+    <div class="text-center mb-3">
+      <a href="{% url 'cgenerate_product' %}" class="btn btn-success">
+        <i class="fas fa-magic"></i> {{ "Generate AI Product"|translate:language_preference }}
+      </a>
+    </div>
 
-  <h2>{{ category.name|translate:language_preference }} Products</h2>  <!-- Translates category name -->
+    <div class="row">
+      {% for product in products %}
+        <div class="col-md-4">
+          <div class="card shadow-sm mb-4">
+            {% if product.image %}
+              <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+            {% else %}
+              <img src="{% static 'Baza/images/default.jpg' %}" class="card-img-top" alt="{% trans 'No image available' %}">
+            {% endif %}
 
-  <div class="category-cards">
-    {% for product in products %}
-      <div class="card">
-        {% if product.image %}
-          <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
-        {% else %}
-          <img src="{% static 'Baza/images/default.jpg' %}" class="card-img-top" alt="{% trans 'No image available' %}">
-        {% endif %}
-        <div class="card-body">
-          <h5 class="card-title">{{ product.name|translate:language_preference }}</h5>  <!-- Translates product name -->
-          <p class="card-text">{{ product.description|translate:language_preference|truncatewords:10 }}</p>  <!-- Translates product description -->
-          <p class="card-text"><strong>{% trans 'Price:' %}</strong> {{ product.price }} {{ product.currency }}</p>  <!-- Translates static text "Price:" -->
-          <a href="{% url 'cproduct_detail' product.id %}" class="btn btn-primary">{{"View Details"|translate:language_preference }}</a>  <!-- Translates static text "View Details" -->
+            <div class="card-body">
+              <h5 class="card-title">{{ product.name|translate:language_preference }}</h5>
+              <p class="card-text">{{ product.description|translate:language_preference|truncatewords:10 }}</p>
+              <p class="card-text">
+                <strong>{% trans 'Price:' %}</strong> {{ product.price }} {{ product.currency }}
+              </p>
 
-          <div class="card-footer text-center">
-            <form method="post" action="{% url 'save_product' product.id %}">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-primary btn-block">{{"Save Product"|translate:language_preference}}</button>  <!-- Translates static text "Save Product" -->
-            </form>
+              <!-- ✅ Check if the product is AI-generated -->
+              {% if product.is_ai_product %}
+                <a href="{% url 'cview_ai_details' product.id %}" class="btn btn-primary btn-block">
+                  <i class="fas fa-robot"></i> {{ 'View AI Details'|translate:language_preference }}
+                </a>
+              {% else %}
+                <a href="{% url 'cproduct_detail' product.id %}" class="btn btn-primary btn-block">
+                  <i class="fas fa-info-circle"></i> {{ 'View Details'|translate:language_preference }}
+                </a>
+              {% endif %}
+
+              <!-- ✅ Save Product Button -->
+              <div class="card-footer text-center">
+                <form method="post" action="{% url 'save_product' product.id %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-outline-primary btn-block">
+                    <i class="fas fa-bookmark"></i> {{ "Save Product"|translate:language_preference }}
+                  </button>
+                </form>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    {% empty %}
-      <p>{% trans 'No products available in this category yet.' %}</p>  <!-- Translates static text "No products available in this category yet." -->
-    {% endfor %}
+      {% empty %}
+        <div class="col-12">
+          <p class="text-center text-muted">
+            <i class="fas fa-box-open"></i> {% trans 'No products available in this category yet.' %}
+          </p>
+        </div>
+      {% endfor %}
+    </div>
   </div>
 {% endblock %}

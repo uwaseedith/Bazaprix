@@ -43,7 +43,7 @@ urlpatterns = [
     path('consumer/profile-settings/', views.consumer_profile_settings, name='consumer_profile_settings'),
     path("set-language/", views.set_language_preference, name="set_language_preference"),
     path('generate-product/', views.generate_product_data, name='generate_product'),
-    path('generate-product/', views.cgenerate_product_data, name='cgenerate_product'),
+    path('cgenerate-product/', views.cgenerate_product_data, name='cgenerate_product'),
     path('ai-product/<int:product_id>/', views.view_ai_details, name='view_ai_details'),
     path('generate-price-info/', views.generate_price_info, name='generate_price_info'),
     path('price-information/<str:country>/<str:category_name>/', views.price_information, name='price_information'),
@@ -51,13 +51,20 @@ urlpatterns = [
     path('delete-price-info/<int:info_id>/', views.delete_price_info, name='delete_price_info'),
     path('price-information/', views.price_information_list, name='price_information_list'),
     path('price-information/<int:info_id>/', views.price_information_detail, name='price_information_detail'),
-    path('ai-product/<int:product_id>/', views.view_ai_details, name='view_ai_details'),
+    path('cai-product/<int:product_id>/', views.cview_ai_details, name='cview_ai_details'),
     path('cgenerate-price-info/', views.cgenerate_price_info, name='cgenerate_price_info'),
     path('cprice-information/<str:country>/<str:category_name>/', views.cprice_information, name='cprice_information'),
     path('cview-price-information/', views.cview_price_information, name='cview_price_information'),
     path('cdelete-price-info/<int:info_id>/', views.cdelete_price_info, name='cdelete_price_info'),
     path('cprice-information/', views.cprice_information_list, name='cprice_information_list'),
     path('cprice-information/<int:info_id>/', views.cprice_information_detail, name='cprice_information_detail'),
+    path('generate-suggested-price/', views.generate_suggested_price_view, name='generate_suggested_price'),
+    path('suggested-price-list/', views.suggested_price_list, name='suggested_price_list'),
+    path('vgenerate-suggested-price/', views.vgenerate_suggested_price_view, name='vgenerate_suggested_price'),
+    path('vsuggested-price-list/', views.vsuggested_price_list, name='vsuggested_price_list'),
+    path('delete-suggested-price/<int:price_id>/', views.delete_suggested_price, name='delete_suggested_price'),
+    path('vdelete-suggested-price/<int:price_id>/', views.delete_suggested_price, name='vdelete_suggested_price'),
+
 
 
 

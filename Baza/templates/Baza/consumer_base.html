@@ -7,6 +7,9 @@
   <meta charset="UTF-8">
   <title>BazaPrix - Consumer Dashboard</title>
   <link rel="stylesheet" href="{% static 'Baza/css/styles.css' %}">
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<script src="https://kit.fontawesome.com/YOUR_FA_KIT.js" crossorigin="anonymous"></script>
   <style>
     /* Header layout using flexbox */
     .header-top {
@@ -82,6 +85,7 @@
         <a href="{% url 'cproduct_list' %}">{{ "Product List"|translate:language_preference }}</a>
         <a href="{% url 'vendor_list' %}">{{ "Vendors"|translate:language_preference }}</a>
         <a href="{% url 'cprice_information_list' %}">{{ "Informations"|translate:language_preference }}</a>
+
         <a href="{% url 'consumer_profile_settings' %}">{{ "Language"|translate:language_preference }}</a>
         <a href="{% url 'login' %}">{{ "Logout"|translate:language_preference }}</a>
       </nav>
