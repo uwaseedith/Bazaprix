@@ -97,3 +97,19 @@ class RateVendorForm(forms.Form):
         label="Feedback",
         required=True
     )
+
+COUNTRY_CHOICES = [
+    ('burundi', 'Burundi'),
+    ('rwanda', 'Rwanda'),
+    ('kenya', 'Kenya'),
+    ('tanzania', 'Tanzania'),
+    ('uganda', 'Uganda'),
+]
+
+class AIProductGenerationForm(forms.Form):
+    country = forms.ChoiceField(choices=COUNTRY_CHOICES, label="Select Country")
+    category = forms.ModelChoiceField(queryset=Category.objects.all(), label="Select Product Category")
+
+class AIPriceInfoGenerationForm(forms.Form):
+    country = forms.ChoiceField(choices=COUNTRY_CHOICES, label="Select Country")
+    category = forms.ModelChoiceField(queryset=Category.objects.all(), label="Select Product Category")

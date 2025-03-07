@@ -181,4 +181,24 @@ class Notification(models.Model):
     
     def __str__(self):
         return f"Notification for {self.vendor.business_name} at {self.created_at}"
-    
+
+class AIProduct(models.Model):
+    country = models.CharField(max_length=100)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    image = models.ImageField(upload_to='ai_products/', blank=True, null=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.country})"
+
+class PriceInformation(models.Model):
+    country = models.CharField(max_length=100)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    insights = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Price Info for {self.category.name} in {self.country}"

@@ -2,6 +2,8 @@
 {% load custom_filters %}
 
 {% block content %}
+
+
 <h2>{{ "Product Categories"|translate:language_preference }}</h2>
 <div class="category-cards">
     {% for category in categories %}
@@ -16,4 +18,5 @@
         </div>
     {% endfor %}
 </div>
+
 {% endblock %}

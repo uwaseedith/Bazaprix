@@ -5,6 +5,11 @@
 {% block content %}
 
 <section>
+  <div class="text-center my-4">
+    <a href="{% url 'cgenerate_price_info' %}" class="btn btn-lg btn-info">
+      <i class="fas fa-search-dollar"></i> {{ "Do you want to know about prices in the region?"|translate:language_preference }}
+    </a>
+  </div>
   <h2>{{ "Price Alerts"|translate:language_preference }}</h2>  <!-- Translates the section heading -->
   <div class="alert-list">
     {% for alert in price_alerts %}

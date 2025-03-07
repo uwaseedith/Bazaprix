@@ -11,3 +11,8 @@ def range_filter(value):
 def translate(value, target_lang):
     """Translates text into the target language."""
     return translate_text(value, target_lang)
+
+@register.filter(name='capitalize')
+def capitalize(value):
+    """Capitalizes only the first letter of a string"""
+    return value.capitalize() if isinstance(value, str) else value

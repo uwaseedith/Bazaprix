@@ -1,0 +1,23 @@
+{% extends "Baza/vendor_base.html" %}
+{% load static %}
+{% load i18n %}
+{% load custom_filters %}
+
+{% block content %}
+  <h2>{{ product.name|translate:language_preference }}</h2>
+
+  <div class="product-detail">
+    {% if product.image %}
+      <img src="{{ product.image.url }}" class="product-image" alt="{{ product.name|translate:language_preference }}">
+    {% else %}
+      <img src="{% static 'Baza/images/default.jpg' %}" class="product-image" alt="{% trans 'No image available' %}">
+    {% endif %}
+
+    <p><strong>{% trans 'Description:' %}</strong> {{ product.description|translate:language_preference }}</p>
+    <p><strong>{% trans 'Price:' %}</strong> {{ product.price }} BIF</p>
+  </div>
+
+  <a href="{% url 'category_products' category_name=product.category.name %}" class="btn btn-secondary mt-3">
+    {{ "Back to Product List"|translate:language_preference }}
+  </a>
+{% endblock %}

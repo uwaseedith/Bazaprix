@@ -1,0 +1,42 @@
+{% extends "Baza/consumer_base.html" %}
+{% load i18n %}
+{% load custom_filters %}
+{% load static %}
+
+{% block content %}
+  <h2 class="text-center mt-4">{{ "AI-Generated Price Information"|translate:language_preference }}</h2>
+
+  <div class="row">
+    {% for info in price_info_list %}
+      <div class="col-md-4">
+        <div class="card shadow-sm mb-4">
+          <div class="card-body">
+            <h4 class="card-title"><strong>{{ "Country"|translate:language_preference }}:</strong> {{ info.country }}</h4>
+            <h5 class="card-subtitle mb-2 text-muted"><strong>{{ "Category"|translate:language_preference }}:</strong> {{ info.category.name }}</h5>
+            
+            <!-- ✅ Show the extracted 'Overall Trend' section -->
+            <p class="card-text"><strong>{{ "Overall Trend:"|translate:language_preference }}</strong> {{ info.overall_trend }}</p>
+
+            <!-- Buttons Section -->
+            <div class="d-flex justify-content-between">
+              <!-- See More Button -->
+              <a href="{% url 'cprice_information_detail' info.id %}" class="btn btn-primary">
+                {{ "See More"|translate:language_preference }}
+              </a>
+
+              <!-- Delete Button -->
+              <form method="post" action="{% url 'delete_price_info' info.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">
+                  {{ "Delete"|translate:language_preference }}
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-muted text-center">{{ "No AI-generated price information available."|translate:language_preference }}</p>
+    {% endfor %}
+  </div>
+{% endblock %}

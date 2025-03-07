@@ -1,53 +1,107 @@
 {% extends 'Baza/vendor_base.html' %}
 {% load custom_filters %}
+{% load static %}
 
 {% block content %}
-<section>
-  <h2>{{ "Notifications"|translate:language_preference }}</h2>
-  <ul>
-    {% for note in notifications %}
-      <li>
-         {{ note.message|translate:language_preference }}<br>
-         <small>{{ note.created_at|date:"SHORT_DATETIME_FORMAT" }}</small>
-         <form method="post" action="{% url 'mark_notification_seen' note.id %}">
-           {% csrf_token %}
-           <button type="submit">{{ "Mark seen"|translate:language_preference }}</button>
-         </form>
-      </li>
-    {% empty %}
-      <li>{{ "No new notifications."|translate:language_preference }}</li>
-    {% endfor %}
-  </ul>
+
+<!-- ✅ Generate Price Information Button -->
+<div class="text-center my-4">
+  <a href="{% url 'generate_price_info' %}" class="btn btn-lg btn-info">
+    <i class="fas fa-search-dollar"></i> {{ "Do you want to know about prices in the region?"|translate:language_preference }}
+  </a>
+</div>
+
+<!-- ✅ Notifications Section -->
+<section class="mb-4">
+  <h2 class="text-center">{{ "Notifications"|translate:language_preference }}</h2>
+  <div class="card shadow-sm">
+    <div class="card-body">
+      {% if notifications %}
+        <ul class="list-group">
+          {% for note in notifications %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <p class="mb-1">{{ note.message|translate:language_preference }}</p>
+                <small class="text-muted">{{ note.created_at|date:"SHORT_DATETIME_FORMAT" }}</small>
+              </div>
+              <form method="post" action="{% url 'mark_notification_seen' note.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-secondary btn-sm">
+                  <i class="fas fa-check"></i> {{ "Mark seen"|translate:language_preference }}
+                </button>
+              </form>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="text-center text-muted">{{ "No new notifications."|translate:language_preference }}</p>
+      {% endif %}
+    </div>
+  </div>
 </section>
 
-<section>
-  <h2>{{ "Price Updates"|translate:language_preference }}</h2>
-  <ul>
-    {% for alert in price_updates %}
-      <li>
-         <strong>{{ alert.product.name }}</strong> {{ "price was updated and has"|translate:language_preference }} {{ alert.change_type }}<br>
-         <small>{{ alert.created_at|date:"SHORT_DATETIME_FORMAT" }}</small>
-         <form method="post" action="{% url 'mark_vendor_alert_seen' alert.id %}">
-          {% csrf_token %}
-          <button type="submit">{{ "Mark seen"|translate:language_preference }}</button>
-        </form>
-      </li>
-    {% empty %}
-      <li>{{ "No price updates."|translate:language_preference }}</li>
-    {% endfor %}
-  </ul>
+<!-- ✅ Price Updates Section -->
+<section class="mb-4">
+  <h2 class="text-center">{{ "Price Updates"|translate:language_preference }}</h2>
+  <div class="card shadow-sm">
+    <div class="card-body">
+      {% if price_updates %}
+        <ul class="list-group">
+          {% for alert in price_updates %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <strong>{{ alert.product.name }}</strong>: 
+                <span class="badge {% if alert.change_type == 'increased' %}badge-danger{% else %}badge-success{% endif %}">
+                  {{ alert.change_type|capitalize }}
+                </span>
+                <br>
+                <small class="text-muted">{{ alert.created_at|date:"SHORT_DATETIME_FORMAT" }}</small>
+              </div>
+              <form method="post" action="{% url 'mark_vendor_alert_seen' alert.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-secondary btn-sm">
+                  <i class="fas fa-check"></i> {{ "Mark seen"|translate:language_preference }}
+                </button>
+              </form>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="text-center text-muted">{{ "No price updates."|translate:language_preference }}</p>
+      {% endif %}
+    </div>
+  </div>
 </section>
 
-<section>
-  <h2>{{ "Product Listings"|translate:language_preference }}</h2>
-  <ul>
-    {% for product in products %}
-      <li>
-        <strong>{{ product.name }}</strong>: {{ product.price }} {{ product.currency }}
-      </li>
-    {% empty %}
-      <li>{{ "No products listed yet."|translate:language_preference }}</li>
-    {% endfor %}
-  </ul>
+<!-- ✅ Product Listings Section -->
+<section class="mb-4">
+  <h2 class="text-center">{{ "Product Listings"|translate:language_preference }}</h2>
+  <div class="card shadow-sm">
+    <div class="card-body">
+      {% if products %}
+        <table class="table table-hover">
+          <thead class="thead-dark">
+            <tr>
+              <th>{{ "Product"|translate:language_preference }}</th>
+              <th>{{ "Price"|translate:language_preference }}</th>
+              <th>{{ "Currency"|translate:language_preference }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for product in products %}
+              <tr>
+                <td><strong>{{ product.name }}</strong></td>
+                <td>{{ product.price }}</td>
+                <td>{{ product.currency }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="text-center text-muted">{{ "No products listed yet."|translate:language_preference }}</p>
+      {% endif %}
+    </div>
+  </div>
 </section>
+
 {% endblock %}

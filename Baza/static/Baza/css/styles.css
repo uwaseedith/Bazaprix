@@ -308,3 +308,46 @@ footer {
 .category-cards .card .btn:hover {
     background-color: #0056b3;
 }
+
+
+.card {
+    border-radius: 10px;
+    border: none;
+    background: #ffffff;
+    padding: 20px;
+}
+
+.card-body {
+    line-height: 1.6;
+}
+
+.insight-content h5 {
+    color: #007bff;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+.insight-content ul {
+    padding-left: 20px;
+}
+
+.insight-content ul li {
+    list-style-type: disc;
+    color: #333;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border: none;
+    padding: 8px 15px;
+    font-size: 14px;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.btn-info {
+    display: inline-block !important;
+    visibility: visible !important;
+}

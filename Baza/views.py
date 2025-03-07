@@ -1,8 +1,8 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Product, Category, Vendor, PriceAlert, PriceUpdate, SavedProduct, Transaction, Feedback, Notification, Consumer
+from .models import Product, Category, Vendor, PriceAlert, PriceUpdate, SavedProduct, Transaction, Feedback, Notification, Consumer, AIProduct, PriceInformation
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login
-from .forms import CustomUserCreationForm, CustomAuthenticationForm, ProductForm, RateVendorForm
+from .forms import CustomUserCreationForm, CustomAuthenticationForm, ProductForm, RateVendorForm, AIPriceInfoGenerationForm
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
@@ -16,6 +16,11 @@ from django.conf import settings
 from django.utils.translation import activate
 from django.core.mail import send_mail
 from django.contrib.sites.shortcuts import get_current_site
+from .forms import AIProductGenerationForm
+from .ai_utils import generate_product_details, generate_product_image, generate_price_trends, format_insights, process_ai_insights
+from django.core.files.base import ContentFile
+import re
+
 
 @login_required
 def vendor_profile(request):
@@ -91,9 +96,13 @@ def cproduct_detail(request, product_id):
 def search(request):
     query = request.GET.get('q', '')
     products = Product.objects.filter(name__icontains=query)
+    # Get the user's language preference
+    language_preference = request.user.language_preference
+
     context = {
         'query': query,
         'products': products,
+        'language_preference': language_preference, 
     }
     return render(request, 'Baza/search_results.html', context)
 
@@ -116,15 +125,6 @@ def home(request):
     return render(request, 'Baza/home.html', context)
 
 
-from django.core.mail import send_mail
-from django.contrib.sites.shortcuts import get_current_site
-from django.contrib.auth import login
-from django.contrib import messages
-from django.shortcuts import render, redirect
-from .forms import CustomUserCreationForm
-from .models import Vendor, Consumer
-from django.utils.translation import activate
-from django.conf import settings
 
 def signup(request):
     if request.method == 'POST':
@@ -745,6 +745,14 @@ def category_products(request, category_name):
     
     # Fetch products that belong to this category
     products = Product.objects.filter(category=category)
+    ai_products = AIProduct.objects.filter(category=category)
+
+    # ✅ Add an `is_ai_product` flag
+    all_products = [
+        {"product": p, "is_ai_product": False} for p in products
+    ] + [
+        {"product": p, "is_ai_product": True} for p in ai_products
+    ]
     
     # Get the vendor's language preference or default to 'en'
     language_preference = request.user.vendor.language_preference if hasattr(request.user, 'vendor') else 'en'
@@ -754,7 +762,7 @@ def category_products(request, category_name):
 
     context = {
         'category': category,
-        'products': products,
+        'products': all_products,  # ✅ Now contains both products and AI products
         'language_preference': language_preference,
     }
     
@@ -767,6 +775,9 @@ def consumer_category_products(request, category_name):
     
     # Fetch products that belong to this category
     products = Product.objects.filter(category=category)
+    ai_products = AIProduct.objects.filter(category=category)
+
+    all_products = list(products) + list(ai_products)
     
     # Get the vendor's language preference or default to 'en'
     language_preference = request.user.consumer.language_preference if hasattr(request.user, 'consumer') else 'en'
@@ -776,7 +787,7 @@ def consumer_category_products(request, category_name):
 
     context = {
         'category': category,
-        'products': products,
+        'products': all_products,
         'language_preference': language_preference,
     }
     
@@ -914,3 +925,404 @@ def create_notification(request, vendor_id):
     send_notification_email(vendor.user, subject, message)
 
     return redirect('vendor_dashboard')
+ # Import AI functions
+def generate_product_data(request):
+    if request.method == "POST":
+        form = AIProductGenerationForm(request.POST)
+        if form.is_valid():
+            country = form.cleaned_data['country']
+            category = form.cleaned_data['category']
+
+            print(f"🌍 Country Selected: {country}, 🏷 Category Selected: {category}")
+
+            # ✅ Generate AI-powered product details
+            product_data = generate_product_details(category.name, country)
+            if not product_data:
+                messages.error(request, "❌ AI failed to generate product details.")
+                return redirect('generate_product')
+
+            product_name = product_data["name"]
+            product_description = product_data["description"]
+            product_price = product_data["price"]
+            image_prompt = product_data["image_prompt"]
+
+            print(f"🛒 Product Name: {product_name}, 📄 Description: {product_description}, 💲 Price: {product_price}")
+
+            # ✅ Generate AI-powered product image and save it
+            product_image_file = generate_product_image(image_prompt, product_name)
+
+            # ✅ Ensure a valid image is saved, otherwise use a default
+            if not product_image_file:
+                print("❌ AI Image Download Failed - Using Default Image")
+                product_image_file = "ai_products/default.jpg"  # ✅ Use default image if AI fails
+
+            print(f"🖼 Final Image File to be Stored: {product_image_file}")
+
+            # ✅ Try to Save AI-generated product to database
+            try:
+                ai_product = AIProduct(
+                    country=country,
+                    category=category,
+                    name=product_name,
+                    description=product_description,
+                    price=product_price,
+                )
+
+                # ✅ Assign image file correctly (Only if it's a file, not a string)
+                if isinstance(product_image_file, ContentFile):
+                    ai_product.image.save(product_image_file.name, product_image_file)
+                    print(f"✅ Image successfully saved in database for {ai_product.name}")
+                else:
+                    ai_product.image = product_image_file  # Default image
+
+                ai_product.save()
+
+                print(f"✅ Product '{ai_product.name}' successfully saved to database!")
+
+            except Exception as e:
+                print(f"❌ Error saving product to database: {e}")
+                messages.error(request, f"❌ Failed to save product to database: {e}")
+                return redirect('generate_product')
+
+            messages.success(request, f"🎉 New AI-generated product added to {category.name}. Notifications sent.")
+            return redirect('category_products', category_name=category.name)
+
+    else:
+        form = AIProductGenerationForm()
+    
+    
+    # ✅ Determine the user's language preference
+    if request.user.is_authenticated:
+        language_preference = (
+            request.user.vendor.language_preference if hasattr(request.user, 'vendor')
+            else request.user.consumer.language_preference if hasattr(request.user, 'consumer')
+            else 'en'
+        )
+    else:
+        language_preference = request.session.get('language_preference', 'en')
+
+    return render(request, 'Baza/generate_product.html', {'form': form, 'language_preference': language_preference})
+
+
+def cgenerate_product_data(request):
+    if request.method == "POST":
+        form = AIProductGenerationForm(request.POST)
+        if form.is_valid():
+            country = form.cleaned_data['country']
+            category = form.cleaned_data['category']
+
+            print(f"🌍 Country Selected: {country}, 🏷 Category Selected: {category}")
+
+            # ✅ Generate AI-powered product details
+            product_data = generate_product_details(category.name, country)
+            if not product_data:
+                messages.error(request, "❌ AI failed to generate product details.")
+                return redirect('generate_product')
+
+            product_name = product_data["name"]
+            product_description = product_data["description"]
+            product_price = product_data["price"]
+            image_prompt = product_data["image_prompt"]
+
+            print(f"🛒 Product Name: {product_name}, 📄 Description: {product_description}, 💲 Price: {product_price}")
+
+            # ✅ Generate AI-powered product image and save it
+            product_image_file = generate_product_image(image_prompt, product_name)
+
+            # ✅ Ensure a valid image is saved, otherwise use a default
+            if not product_image_file:
+                print("❌ AI Image Download Failed - Using Default Image")
+                product_image_file = "ai_products/default.jpg"  # ✅ Use default image if AI fails
+
+            print(f"🖼 Final Image File to be Stored: {product_image_file}")
+
+            # ✅ Try to Save AI-generated product to database
+            try:
+                ai_product = AIProduct(
+                    country=country,
+                    category=category,
+                    name=product_name,
+                    description=product_description,
+                    price=product_price,
+                )
+
+                # ✅ Assign image file correctly (Only if it's a file, not a string)
+                if isinstance(product_image_file, ContentFile):
+                    ai_product.image.save(product_image_file.name, product_image_file)
+                    print(f"✅ Image successfully saved in database for {ai_product.name}")
+                else:
+                    ai_product.image = product_image_file  # Default image
+
+                ai_product.save()
+
+                print(f"✅ Product '{ai_product.name}' successfully saved to database!")
+
+            except Exception as e:
+                print(f"❌ Error saving product to database: {e}")
+                messages.error(request, f"❌ Failed to save product to database: {e}")
+                return redirect('generate_product')
+
+            messages.success(request, f"🎉 New AI-generated product added to {category.name}. Notifications sent.")
+            return redirect('consumer_category_products', category_name=category.name)
+
+    else:
+        form = AIProductGenerationForm()
+    
+    
+    # ✅ Determine the user's language preference
+    if request.user.is_authenticated:
+        language_preference = (
+            request.user.vendor.language_preference if hasattr(request.user, 'vendor')
+            else request.user.consumer.language_preference if hasattr(request.user, 'consumer')
+            else 'en'
+        )
+    else:
+        language_preference = request.session.get('language_preference', 'en')
+
+    return render(request, 'Baza/cgenerate_product.html', {'form': form, 'language_preference': language_preference})
+
+
+def view_ai_details(request, product_id):
+    """
+    View AI-generated product details.
+    """
+    product = get_object_or_404(AIProduct, id=product_id)
+
+    # Get user's language preference
+    language_preference = request.user.vendor.language_preference if hasattr(request.user, 'vendor') else 'en'
+
+    context = {
+        'product': product,
+        'language_preference': language_preference,
+    }
+
+    return render(request, 'Baza/view_ai_details.html', context)
+
+
+def cview_ai_details(request, product_id):
+    """
+    View AI-generated product details.
+    """
+    product = get_object_or_404(AIProduct, id=product_id)
+
+    # Get user's language preference
+    language_preference = request.user.consumer.language_preference if hasattr(request.user, 'consumer') else 'en'
+
+    context = {
+        'product': product,
+        'language_preference': language_preference,
+    }
+
+    return render(request, 'Baza/cview_ai_details.html', context)
+
+def generate_price_info(request):
+    """
+    View for selecting country and product category for AI-generated price trends.
+    """
+    if request.method == "POST":
+        form = AIPriceInfoGenerationForm(request.POST)
+        if form.is_valid():
+            country = form.cleaned_data['country']
+            category = form.cleaned_data['category']
+            return redirect('price_information', country=country, category_name=category.name)
+
+    else:
+        form = AIPriceInfoGenerationForm()
+    
+     # Get user's language preference
+    language_preference = request.user.vendor.language_preference if hasattr(request.user, 'vendor') else 'en'
+
+
+    return render(request, 'Baza/generate_price_info.html', {'form': form, 'language_preference': language_preference,})
+
+def cgenerate_price_info(request):
+    """
+    View for selecting country and product category for AI-generated price trends.
+    """
+    if request.method == "POST":
+        form = AIPriceInfoGenerationForm(request.POST)
+        if form.is_valid():
+            country = form.cleaned_data['country']
+            category = form.cleaned_data['category']
+            return redirect('cprice_information', country=country, category_name=category.name)
+
+    else:
+        form = AIPriceInfoGenerationForm()
+    
+     # Get user's language preference
+    language_preference = request.user.consumer.language_preference if hasattr(request.user, 'consumer') else 'en'
+
+
+    return render(request, 'Baza/cgenerate_price_info.html', {'form': form, 'language_preference': language_preference,})
+
+
+def price_information(request, country, category_name):
+    """
+    View to generate AI-powered price trends and insights for a selected category in a country.
+    """
+    category = get_object_or_404(Category, name=category_name)
+
+    # ✅ Generate AI-powered price trends
+    ai_response = generate_price_trends(category.name, country)
+
+    if not ai_response:
+        messages.error(request, "❌ AI failed to generate price trends.")
+        return redirect('generate_price_info')
+
+    # ✅ Save AI-generated price information to database
+    price_info = PriceInformation.objects.create(
+        country=country,
+        category=category,
+        insights=ai_response
+    )
+
+def cprice_information(request, country, category_name):
+    """
+    View to generate AI-powered price trends and insights for a selected category in a country.
+    """
+    category = get_object_or_404(Category, name=category_name)
+
+    # ✅ Generate AI-powered price trends
+    ai_response = generate_price_trends(category.name, country)
+
+    if not ai_response:
+        messages.error(request, "❌ AI failed to generate price trends.")
+        return redirect('generate_price_info')
+
+    # ✅ Save AI-generated price information to database
+    price_info = PriceInformation.objects.create(
+        country=country,
+        category=category,
+        insights=ai_response
+    )
+
+
+    return redirect('cprice_information_list')
+
+def view_price_information(request):
+    """
+    View to display AI-generated price information.
+    """
+    price_info_list = PriceInformation.objects.all()
+
+    for info in price_info_list:
+        info.insights_list = process_ai_insights(info.insights)
+
+    
+    language_preference = request.user.vendor.language_preference if hasattr(request.user, 'vendor') else 'en'
+
+
+    return render(request, 'Baza/price_information.html', {'price_info_list': price_info_list, 'language_preference': language_preference,})
+
+def cview_price_information(request):
+    """
+    View to display AI-generated price information.
+    """
+    price_info_list = PriceInformation.objects.all()
+
+    for info in price_info_list:
+        info.insights_list = process_ai_insights(info.insights)
+
+    
+    language_preference = request.user.consumer.language_preference if hasattr(request.user, 'consumer') else 'en'
+
+
+    return render(request, 'Baza/cprice_information.html', {'price_info_list': price_info_list, 'language_preference': language_preference,})
+
+def delete_price_info(request, info_id):
+    """
+    View to delete an AI-generated price information entry.
+    """
+    price_info = get_object_or_404(PriceInformation, id=info_id)
+
+    if request.method == "POST":
+        price_info.delete()
+        messages.success(request, "✅ Price information deleted successfully.")
+
+    return redirect('view_price_information')
+
+
+def cdelete_price_info(request, info_id):
+    """
+    View to delete an AI-generated price information entry.
+    """
+    price_info = get_object_or_404(PriceInformation, id=info_id)
+
+    if request.method == "POST":
+        price_info.delete()
+        messages.success(request, "✅ Price information deleted successfully.")
+
+    return redirect('cview_price_information')
+
+def price_information_list(request):
+    """
+    Displays a list of AI-generated price information in card format.
+    """
+    price_info_list = PriceInformation.objects.all()
+
+    for info in price_info_list:
+        info.overall_trend = extract_overall_trend(info.insights)
+
+    language_preference = request.user.vendor.language_preference if hasattr(request.user, 'vendor') else 'en'
+
+    return render(request, 'Baza/price_information_list.html', {'price_info_list': price_info_list, 'language_preference': language_preference})
+
+def cprice_information_list(request):
+    """
+    Displays a list of AI-generated price information in card format.
+    """
+    price_info_list = PriceInformation.objects.all()
+
+    for info in price_info_list:
+        info.overall_trend = extract_overall_trend(info.insights)
+
+    language_preference = request.user.consumer.language_preference if hasattr(request.user, 'consumer') else 'en'
+
+    return render(request, 'Baza/cprice_information_list.html', {'price_info_list': price_info_list, 'language_preference': language_preference})
+
+def extract_overall_trend(insights):
+    """
+    Extracts the 'Overall Trend' section from AI-generated insights.
+    Returns a short summary or 'Not Available' if not found.
+    """
+
+    if not insights:
+        return "Not Available"
+
+    # ✅ Try searching for a section labeled as "Overall Trend"
+    match = re.search(r"Overall Trend:\s*(.*?)\n\n", insights, re.DOTALL)
+
+    if match:
+        return match.group(1).strip()  # ✅ Extract the text after "Overall Trend:"
+
+    # ✅ Try alternative patterns if "Overall Trend:" is missing
+    match_alt = re.search(r"\*\*1\.\s*Are prices increasing or decreasing\?\*\*(.*?)\*\*", insights, re.DOTALL)
+    
+    if match_alt:
+        return match_alt.group(1).strip()  # ✅ Extract "Are prices increasing or decreasing?" section
+
+    return "Not Available"
+
+def price_information_detail(request, info_id):
+    """
+    Displays the full AI-generated price analysis when a user clicks 'See More'.
+    """
+    info = get_object_or_404(PriceInformation, id=info_id)
+
+    info.insights_list = process_ai_insights(info.insights)
+
+    language_preference = request.user.vendor.language_preference if hasattr(request.user, 'vendor') else 'en'
+
+    return render(request, 'Baza/price_information_detail.html', {'info': info, 'language_preference': language_preference})
+
+def cprice_information_detail(request, info_id):
+    """
+    Displays the full AI-generated price analysis when a user clicks 'See More'.
+    """
+    info = get_object_or_404(PriceInformation, id=info_id)
+
+    info.insights_list = process_ai_insights(info.insights)
+
+    language_preference = request.user.consumer.language_preference if hasattr(request.user, 'consumer') else 'en'
+
+    return render(request, 'Baza/cprice_information_detail.html', {'info': info, 'language_preference': language_preference})

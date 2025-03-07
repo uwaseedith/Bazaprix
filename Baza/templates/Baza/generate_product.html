@@ -1,0 +1,39 @@
+{% extends "Baza/vendor_base.html" %}
+{% load static %}
+{% load custom_filters %}
+
+{% block content %}
+  <!-- ✅ Display Django messages (including success notifications) -->
+  {% if messages %}
+    <div class="alert-container">
+      {% for message in messages %}
+        <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% else %}alert-info{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <h2>{{ "Generate AI Product"|translate:language_preference }}</h2>
+
+  <form method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="country">{{ "Select Country"|translate:language_preference }}:</label>
+      {{ form.country }}
+    </div>
+
+    <div class="form-group">
+      <label for="category">{{ "Select Product Category"|translate:language_preference }}:</label>
+      {{ form.category }}
+    </div>
+
+    <button type="submit" class="btn btn-primary">{{ "Generate Product"|translate:language_preference }}</button>
+  </form>
+
+  <!-- ✅ Back to Product List Button -->
+  <a href="{% url 'product_list' %}" class="btn btn-secondary mt-3">
+    {{ "Back to Product List"|translate:language_preference }}
+  </a>
+
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "Baza/consumer_base.html" %}
+{% load static custom_filters %}
+
+{% block content %}
+  <h2>{{"Generate AI Price Information"|translate:language_preference }}</h2>
+
+  <form method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="country">{{ "Select Country"|translate:language_preference }}:</label>
+      {{ form.country }}
+    </div>
+
+    <div class="form-group">
+      <label for="category">{{ "Select Product Category"|translate:language_preference }}:</label>
+      {{ form.category }}
+    </div>
+
+    <button type="submit" class="btn btn-primary">{{ "Generate Information"|translate:language_preference }}</button>
+  </form>
+{% endblock %}
