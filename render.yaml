@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: your-app-name
+    env: python
+    buildCommand: ./build.sh
+    startCommand: gunicorn BazaPrix.wsgi:application
+    disk:
+      name: media
+      mountPath: /app/media
+      sizeGB: 1

@@ -79,18 +79,13 @@ WSGI_APPLICATION = 'BazaPrix.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'bazaprix_db',         
-        'USER': 'root',       
-        'PASSWORD': 'Uwaseedith@2000',  
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-        },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
+# Make sure you have ROOT_URLCONF defined
+ROOT_URLCONF = 'BazaPrix.urls'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -158,13 +153,11 @@ LOCALE_PATHS = [
 
 LANGUAGE_CODE = 'en'
 
-
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
+# Email configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'uwaseedith2@gmail.com'
-EMAIL_HOST_PASSWORD = 'lmqv ouat szfz iqvh'
-DEFAULT_FROM_EMAIL = 'BazaPrix <uwaseedith2@gmail.com>'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = f'BazaPrix <{os.environ.get("EMAIL_HOST_USER")}>'

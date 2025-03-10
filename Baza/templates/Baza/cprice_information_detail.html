@@ -19,11 +19,11 @@
         <div class="insight-content">
           {% for section in info.insights_list %}
             {% if section.type == "heading" %}
-              <h5 class="mt-3">{{ section.content }}</h5>
+              <h5 class="mt-3">{{ section.content|translate:language_preference }}</h5>
             {% elif section.type == "bullet" %}
-              <ul><li>{{ section.content }}</li></ul>
+              <ul><li>{{ section.content|translate:language_preference }}</li></ul>
             {% else %}
-              <p>{{ section.content }}</p>
+              <p>{{ section.content|translate:language_preference }}</p>
             {% endif %}
           {% endfor %}
         </div>
