@@ -141,73 +141,58 @@ def signup(request):
                 user.last_name = names[1]
             user.save()  # Save the user first so that the ID is generated
 
-            # Now that the user is saved, you can check if they are a vendor and create the Vendor instance
+            # Determine the user type
             user_type = form.cleaned_data.get('user_type')
+
             if user_type == 'vendor':
                 phone_number = form.cleaned_data.get('phone_number')
                 market = form.cleaned_data.get('market')
                 Vendor.objects.create(user=user, business_name=full_name, location=market, contact_info=phone_number)
-                
-                # Send a notification to all consumers that a new vendor has signed up
-                consumers = Consumer.objects.all()  # Assuming consumers need to be notified
-                subject = f"New Vendor Registered: {full_name}"
-                message = f"Hello, a new vendor has registered: {full_name}.\n\nCheck out their profile on the platform/"
-                
-                for consumer in consumers:
-                    send_mail(
-                        subject,
-                        message,
-                        settings.DEFAULT_FROM_EMAIL,  # Your email address
-                        [consumer.user.email],  # Send to the consumer's email
-                        fail_silently=False,
-                    )
 
-                # Send an email to the new user to confirm their registration as a vendor
+                # Send notification emails to consumers
+                consumers = Consumer.objects.all()
+                subject = f"New Vendor Registered: {full_name}"
+                message = f"Hello, a new vendor has registered: {full_name}.\n\nCheck out their profile on BazaPrix."
+
+                for consumer in consumers:
+                    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [consumer.user.email], fail_silently=False)
+
+                # Welcome email for vendors
                 subject_user = "Welcome to BazaPrix as a Vendor!"
                 message_user = f"Hello {full_name},\n\nThank you for registering as a vendor with BazaPrix. You can now manage your products and interact with consumers. Visit your profile at BazaPrix."
 
-            else:
-                # Send a notification to all vendors that a new consumer has signed up
-                vendors = Vendor.objects.all()  # Assuming vendors need to be notified
-                subject = f"New Consumer Registered: {full_name}"
-                message = f"Hello, a new consumer has signed up: {full_name}.\n\nCheck out their profile at BazaPrix"
-                
-                for vendor in vendors:
-                    send_mail(
-                        subject,
-                        message,
-                        settings.DEFAULT_FROM_EMAIL,  # Your email address
-                        [vendor.user.email],  # Send to the vendor's email
-                        fail_silently=False,
-                    )
+                dashboard_redirect = 'vendor_dashboard'  # Redirect vendor to vendor dashboard
 
-                # Send an email to the new user to confirm their registration as a consumer
+            else:  # Consumer
+                # Send notification emails to vendors
+                vendors = Vendor.objects.all()
+                subject = f"New Consumer Registered: {full_name}"
+                message = f"Hello, a new consumer has signed up: {full_name}.\n\nCheck out their profile at BazaPrix."
+
+                for vendor in vendors:
+                    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [vendor.user.email], fail_silently=False)
+
+                # Welcome email for consumers
                 subject_user = "Welcome to BazaPrix as a Consumer!"
                 message_user = f"Hello {full_name},\n\nThank you for signing up as a consumer with BazaPrix. You can now explore products, vendors, and more. Visit your profile at BazaPrix to get started."
 
-            # Send the email to the new user
-            send_mail(
-                subject_user,
-                message_user,
-                settings.DEFAULT_FROM_EMAIL,  # Your email address
-                [user.email],  # Send to the new user's email
-                fail_silently=False,
-            )
+                dashboard_redirect = 'consumer_dashboard'  # Redirect consumer to consumer dashboard
 
-            # Set language preference (use session or default)
+            # Send the welcome email
+            send_mail(subject_user, message_user, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=False)
+
+            # Set language preference
             user_language = user.vendor.language_preference if hasattr(user, 'vendor') else request.session.get('language_preference', 'en')
             activate(user_language)  # Activate the language immediately
             request.session['django_language'] = user_language 
 
-            # Send a welcome email to the new user
-            send_welcome_email(user)
-
-
-            
-            # Log in the user after saving everything
+            # Log in the user after signup
             login(request, user)
             messages.success(request, "Signup successful!")
-            return redirect('home')
+
+            # Redirect user based on role
+            return redirect(dashboard_redirect)  # Redirect to correct dashboard
+
     else:
         form = CustomUserCreationForm()
 

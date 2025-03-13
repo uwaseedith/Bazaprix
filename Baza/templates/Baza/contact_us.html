@@ -2,20 +2,44 @@
 {% load static custom_filters %}
 
 {% block content %}
-<h2>{{ "Contact Us"|translate:language_preference }}</h2>
+<div class="container my-5">
+    <!-- Contact Us Section -->
+    <h2 class="text-center text-primary mb-4">{{ "Contact Us"|translate:language_preference }}</h2>
 
-<section id="contact-us">
-  <p>{{ "If you have any questions or need assistance, please get in touch with us:"|translate:language_preference }}</p>
-  <ul>
-    <li>{{ "Email:"|translate:language_preference }} <a href="mailto:info@bazaprix.com">info@bazaprix.com</a></li>
-    <li>{{ "Phone:"|translate:language_preference }} +123 456 7890</li>
-    <li>
-      {{ "Follow us on social media:"|translate:language_preference }}
-      <a href="https://facebook.com/bazaprix" target="_blank">Facebook</a>,
-      <a href="https://twitter.com/bazaprix" target="_blank">Twitter</a>,
-      <a href="https://instagram.com/bazaprix" target="_blank">Instagram</a>
-    </li>
-  </ul>
-</section>
+    <section id="contact-us" class="bg-light p-4 rounded shadow text-center">
+        <p class="lead text-muted">
+            {{ "If you have any questions or need assistance, please get in touch with us:"|translate:language_preference }}
+        </p>
+
+        <ul class="list-unstyled">
+            <li class="mb-2">
+                <strong>{{ "Email:"|translate:language_preference }}</strong> 
+                <a href="mailto:info@bazaprix.com" class="text-decoration-none text-dark">
+                    <i class="fas fa-envelope"></i> uwaseedith2@gmail.com
+                </a>
+            </li>
+            <li class="mb-2">
+                <strong>{{ "Phone:"|translate:language_preference }}</strong> 
+                <i class="fas fa-phone"></i> +257 71 020 942
+            </li>
+            <li>
+                <strong>{{ "Follow us on social media:"|translate:language_preference }}</strong>
+                <br>
+                <a href="https://facebook.com/bazaprix" target="_blank" class="me-3 text-decoration-none">
+                    <i class="fab fa-facebook fa-lg text-primary"></i> Facebook
+                </a>
+                <a href="https://twitter.com/bazaprix" target="_blank" class="me-3 text-decoration-none">
+                    <i class="fab fa-twitter fa-lg text-info"></i> Twitter
+                </a>
+                <a href="https://instagram.com/bazaprix" target="_blank" class="text-decoration-none">
+                    <i class="fab fa-instagram fa-lg text-danger"></i> Instagram
+                </a>
+            </li>
+        </ul>
+    </section>
+</div>
+
+<!-- Include FontAwesome for Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
 {% endblock %}

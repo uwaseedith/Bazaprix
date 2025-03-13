@@ -354,33 +354,112 @@ footer {
 
 /* ✅ Full Page Background */
 .homepage-container {
-    background: linear-gradient(to right, #007bff, #6610f2);
+    background: linear-gradient(135deg, #aeb7c1, #7d57bc);
     min-height: 100vh;
-    padding: 50px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 50px 20px;
+    text-align: center;
 }
 
 /* ✅ Text Styling */
 h2, h3, p {
     text-align: center;
+    color: #f8f9fa;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
 }
 
-/* ✅ Animation Effects */
-.fade-in {
-    opacity: 0;
-    transform: translateY(30px);
-    animation: fadeInUp 1.2s ease-out forwards;
+/* ✅ Title & Section Spacing */
+h2 {
+    font-size: 2.8rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+h3 {
+    font-size: 2rem;
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
+
+/* ✅ Container for Category Cards */
+.category-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-top: 30px;
+    padding: 20px;
+}
+
+/* ✅ Styling for Category Cards */
+.category-cards .card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    padding: 25px;
+    text-align: center;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+/* ✅ Hover Effect for Cards */
+.category-cards .card:hover {
+    transform: scale(1.07);
+    box-shadow: 0 8px 16px rgba(255, 255, 255, 0.3);
+}
+
+/* ✅ Ensure Buttons are Well Styled */
+.btn {
+    padding: 12px 20px;
+    font-size: 1.1em;
+    font-weight: bold;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease-in-out;
+}
+
+/* ✅ Primary Buttons */
+.btn-primary {
+    background: linear-gradient(135deg, #ffdd57, #ffc107);
+    color: black;
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #ffc107, #ffdd57);
+    transform: translateY(-3px);
+}
+
+/* ✅ Secondary Buttons */
+.btn-secondary {
+    background: linear-gradient(135deg, #ffc107, #ffdd57);
+    color: white;
+    border: none;
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(135deg, #ffc107, #ffdd57);
+    transform: translateY(-3px);
 }
 
 /* ✅ Smooth Card Hover */
 .animated-card {
-    transition: transform 0.3s ease-in-out;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
 .animated-card:hover {
     transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(255, 255, 255, 0.2);
 }
 
-/* ✅ Animations */
+/* ✅ Fixing Fade-In Animation */
+.fade-in {
+    opacity: 1 !important;
+    transform: translateY(0);
+    animation: fadeInUp 1.2s ease-out forwards;
+}
+
 @keyframes fadeInUp {
     0% {
         opacity: 0;
@@ -389,5 +468,29 @@ h2, h3, p {
     100% {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+/* ✅ Responsive Adjustments */
+@media (max-width: 768px) {
+    .homepage-container {
+        padding: 30px 15px;
+    }
+
+    h2 {
+        font-size: 2.4rem;
+    }
+
+    h3 {
+        font-size: 1.8rem;
+    }
+
+    .category-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .btn {
+        font-size: 1em;
+        padding: 10px 15px;
     }
 }

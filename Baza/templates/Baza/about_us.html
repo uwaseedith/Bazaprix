@@ -2,13 +2,15 @@
 {% load static custom_filters %}
 
 {% block content %}
-<h2>{{ "About Us"|translate:language_preference }}</h2>
+<div class="container my-5">
+    <!-- About Us Section -->
+    <h2 class="text-center text-primary mb-4">{{ "About Us"|translate:language_preference }}</h2>
 
-<section id="our-mission">
-  <h3>{{ "Our Mission"|translate:language_preference }}</h3>
-  <p>
-    {{ "BazaPrix is dedicated to providing transparent, real-time pricing information to help consumers make informed decisions and to empower local vendors in competitive markets. Our mission is to reduce information asymmetry, promote fairness, and drive economic growth by ensuring that pricing data is both accessible and accurate."|translate:language_preference }}
-  </p>
-</section>
-
+    <section id="our-mission" class="bg-light p-4 rounded shadow">
+        <h3 class="text-dark">{{ "Our Mission"|translate:language_preference }}</h3>
+        <p class="lead text-muted">
+            {{ "BazaPrix is dedicated to providing transparent, real-time pricing information to help consumers make informed decisions and to empower local vendors in competitive markets. Our mission is to reduce information asymmetry, promote fairness, and drive economic growth by ensuring that pricing data is both accessible and accurate."|translate:language_preference }}
+        </p>
+    </section>
+</div>
 {% endblock %}
