@@ -171,6 +171,4 @@ python manage.py runserver
 
 ---
 
-## **🎉 Enjoy Shopping with BazaPrix! 🚀🔥**  
-
-Let me know if you want to modify anything! 🚀💯
+## **🎉 Enjoy Shopping with BazaPrix! 🔥**  
