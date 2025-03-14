@@ -141,8 +141,7 @@ python manage.py runserver
 
 
 ## **🚀 GitHub Repository**
-🔗 **BazaPrix GitHub Repo**: [BazaPrix Repository](https://github.com/uwaseedith/Bazaprix) https://drive.google.com/file/d/1vUq1JGCHFM2zy-T1RFhTflj9Hu63bKGO/view?usp=sharing
-
+🔗 **BazaPrix GitHub Repo**: [BazaPrix Repository](https://github.com/uwaseedith/Bazaprix) 
 ---
 
 
@@ -151,7 +150,7 @@ python manage.py runserver
 
 ---
 ## **🎨 Diagrams**
-🔗 **Diagrams link**: [BazaPrix UI Design](https://drive.google.com/file/d/1vUq1JGCHFM2zy-T1RFhTflj9Hu63bKGO/view?usp=sharing)
+🔗 **Diagrams link**: [BazaPrix Diagrams](https://drive.google.com/file/d/1vUq1JGCHFM2zy-T1RFhTflj9Hu63bKGO/view?usp=sharing)
 
 ---
 
