@@ -1,235 +1,176 @@
-# Bazaprix Price Comparison Platform
 
-## Description
+# **BazaPrix 🛍️**  
 
-**Bazaprix** is a web application designed to empower consumers in Burundi with the ability to compare product prices from various vendors. The platform allows vendors to list their products, while consumers can explore products categorized into food, electronics, fuel, and other essential categories. The core objective is to provide real-time price comparisons and facilitate informed purchasing decisions. The platform also includes features like price alerts and vendor ratings.
+📌 **Overview**  
+**BazaPrix** is an intelligent price comparison platform that enables consumers to compare real-time prices of essential products across various categories. Vendors can list their products, manage pricing, and receive feedback from customers. The platform also provides AI-powered price insights, product recommendations, and multilingual support to cater to a diverse user base.
 
-## Features
+---
 
-- **Product Listings**: Vendors can list their products, including images, prices, and other product details.
-- **Price Comparison**: Consumers can compare prices of products in various categories like food, electronics, fuel, etc.
-- **Price Alerts**: Users can set alerts for price changes on specific products.
-- **Vendor Profiles**: Each vendor has a profile with their contact information and business details.
-- **Save Products**: Consumers can save products for later viewing and comparison.
+## **🚀 Key Features**
+✅ **User Authentication** (Consumers, Vendors, Admins)  
+✅ **Product Management** (Upload, Edit, Delete, View Products)  
+✅ **Category-Based Product Listings** (Food, Electronics, Apparel, etc.)  
+✅ **AI-Powered Price Insights** (Predictive analytics & trends)  
+✅ **Vendor Rating & Feedback System** (Consumers can rate and review vendors)  
+✅ **Multilingual Support** (Translate content dynamically)  
+✅ **AI-Generated Products** (AI suggests new products based on trends)  
+✅ **Email Notifications** (Vendors receive automated emails for new ratings & product updates)  
+✅ **Secure Payment Integration** (For premium vendor features)  
+✅ **Responsive & Interactive UI** (Modern frontend with Bootstrap)  
+✅ **Deployed on Render** (Auto-deployments from GitHub)  
+✅ **SQLite/PostgreSQL Database** (Depending on deployment)  
 
-## Technologies Used
+---
 
-- **Frontend**: HTML, CSS, JavaScript (with Django templates for dynamic content rendering)
-- **Backend**: Python (Django Framework)
-- **Database**: MySQL (for storing product, vendor, and feedback data)
-- **Authentication**: JWT for user authentication and authorization
-- **Deployment**: Docker, AWS 
+## **🛠️ Setup Instructions**
 
-## How to Set Up the Environment and Project
-
-### Prerequisites
-
-- Python 3.8 or higher
-- MySQL
-- Node.js (if you have any front-end dependencies)
-- Docker (for containerization)
-- Git (for version control)
-- AWS (account for deployment)
-
-### 1. Clone the Repository
-
-First, clone the repository to your local machine:
-
+### **1️⃣ Clone the Repository**
 ```bash
-git clone https://github.com/your-username/bazaprix.git
-cd bazaprix
+git clone https://github.com/uwaseedith/BazaPrix.git
+cd BazaPrix
 ```
 
-### 2. Set Up the Virtual Environment
-
-Create and activate a virtual environment to manage your project’s dependencies:
-
+### **2️⃣ Set Up Virtual Environment**
 ```bash
-python -m venv env
-source env/bin/activate  # On Windows, use `env\Scripts\activate`
+python -m venv myenv
+source myenv/bin/activate  # For Linux/macOS
+myenv\Scripts\activate  # For Windows
 ```
 
-### 3. Install Dependencies
-
-Install all necessary Python and JavaScript dependencies:
-
+### **3️⃣ Install Dependencies**
 ```bash
-pip install -r requirements.txt  # Install Python dependencies
-npm install  # Install JavaScript dependencies (if applicable)
+pip install -r requirements.txt
 ```
 
-### 4. Set Up the Database
+### **4️⃣ Configure Environment Variables**
+Create a `.env` file in the root directory:
 
-Make sure MySQL is running and create a database for the project:
-
-```bash
-mysql -u root -p
-CREATE DATABASE bazaprix;
+```ini
+SECRET_KEY='your-secret-key'
+DEBUG=True
+DATABASE_URL=sqlite:///db.sqlite3  # ✅ Using SQLite for local development
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+EMAIL_HOST_USER='your-email@gmail.com'
+EMAIL_HOST_PASSWORD='your-email-password'
 ```
 
-Update the database settings in your `settings.py` file under the `DATABASES` section with the correct MySQL credentials:
-
-```python
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'bazaprix',
-        'USER': 'your-username',
-        'PASSWORD': 'your-password',
-        'HOST': 'localhost',
-        'PORT': '3306',
-    }
-}
-```
-
-### 5. Apply Migrations
-
-Run migrations to set up the database tables:
-
+### **5️⃣ Apply Migrations**
 ```bash
+python manage.py makemigrations
 python manage.py migrate
 ```
 
-### 6. Create a Superuser (Optional)
-
-To access the Django admin, you can create a superuser:
-
+### **6️⃣ Create Superuser (For Admin Access)**
 ```bash
 python manage.py createsuperuser
 ```
 
-### 7. Run the Development Server
-
-Start the Django development server:
-
+### **7️⃣ Run the Server**
 ```bash
 python manage.py runserver
 ```
-
-You can now access the application at `http://127.0.0.1:8000/`.
-
-## Deployment Plan
-
-### Infrastructure
-
-For the deployment of **Bazaprix** using Render, we will use the following infrastructure setup:
-
-1. **Cloud Hosting:**
-    - **Render Web Service** for hosting the application.
-    - **Render Managed Database** (MySQL or PostgreSQL) to host the database securely.
-    - Render automatically scales and load-balances traffic across multiple instances as needed.
-
-2. **Docker:**
-    - The application will be containerized using Docker, ensuring consistency across different environments (development, staging, production).
-    - Docker Compose can be used locally for multi-container setups (e.g., application server and database).
-
-3. **CI/CD:**
-    - Render integrates directly with GitHub for automated deployment pipelines.
-    - Optionally, use GitHub Actions for additional testing or building Docker images before deploying.
-    - GitHub repository for version control and collaboration.
+🔗 **Access the platform at:** `http://127.0.0.1:8000/`
 
 ---
 
-### 1. Dockerize the Application
+## **🚀 Deployment Plan**
 
-Create a `Dockerfile` in the root directory of your project:
-
-```Dockerfile
-# Use the official Python image from Docker Hub
-FROM python:3.8-slim
-
-# Set the working directory in the container
-WORKDIR /app
-
-# Copy the requirements.txt file and install dependencies
-COPY requirements.txt /app/
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the rest of the application code
-COPY . /app/
-
-# Expose the port the app runs on
-EXPOSE 8000
-
-# Start the Django app using Gunicorn (production-ready)
-CMD ["gunicorn", "yourproject.wsgi:application", "--bind", "0.0.0.0:8000"]
-```
+### **🏰 Infrastructure Setup**
+✅ **Deployed on Render**  
+✅ **Frontend:** Static site hosting on Render  
+✅ **Backend:** Django application deployed as a Web Service  
+✅ **Database:** PostgreSQL (For production) / SQLite3 (For local development)  
+✅ **CI/CD:** Auto-deployments from GitHub to Render  
+✅ **Security:** SSL/TLS certificates via Let's Encrypt (Auto-provisioned by Render)  
 
 ---
 
-### 2. Deploying on Render
+### **🚀 Deployment Steps**
 
-1. **Create a Web Service on Render:**
-    - Log in to your [Render dashboard](https://dashboard.render.com/).
-    - Click **New** > **Web Service**.
-    - Connect your GitHub repository.
-    - Select the **Docker** option—Render will automatically detect the `Dockerfile` in your repository.
-    - Specify any required environment variables (e.g., `DATABASE_URL`, `SECRET_KEY`, etc.).
-    - Set the port to match your container’s exposed port (e.g., `8000`).
+#### **1️⃣ Deploy Django Backend on Render**
+- Log in to Render and create a new **Web Service**.
+- Connect **GitHub repository** to Render.
+- Set the build command:
+  ```bash
+  pip install -r requirements.txt
+  ```
+- Set the start command:
+  ```bash
+  gunicorn Baza.wsgi:application
+  ```
+- Configure **environment variables** in the Render dashboard (`DATABASE_URL`, `EMAIL_HOST`, `SECRET_KEY`).
+- Run migrations after deployment:
+  ```bash
+  python manage.py migrate
+  ```
 
-2. **Deploy the Application:**
-    - Render will build your Docker image and deploy your application.
-    - Use Render’s one-off command feature to run necessary Django management commands (e.g., migrations):
-      ```bash
-      python manage.py migrate
-      ```
+#### **2️⃣ Deploy Frontend on Render**
+- Create a **new Static Site** on Render.
+- Connect to **GitHub repository** (if separate frontend repo exists).
+- Set the build command (if applicable).
+- Deploy the static files.
 
----
-
-### 3. Set Up the Managed Database
-
-1. **Create a Managed Database:**
-    - In your Render dashboard, create a new **Managed Database** (choose MySQL).
-
-2. **Configure Database Connection:**
-    - Update your Django `settings.py` with the database credentials provided by Render.
-    - Ensure your application is configured to securely connect to the managed database.
-
----
-
-### 4. Configure Storage for Static and Media Files
-
-2.  Using Render Object Storage**
-    - If available, set up Render’s Object Storage.
-    - Configure your application based on Render’s documentation for object storage.
+#### **3️⃣ Automated CI/CD Pipeline**
+- On every push to the **main** branch, Render **automatically triggers** a build and deployment.
+- **Optional:** Use GitHub Actions for pre-deployment testing.
 
 ---
 
-### 5. Load Balancing & Scaling
-
-- Render automatically provides load balancing and scaling for your web service.
-- Configure auto-scaling options in the Render dashboard to handle increased traffic.
-
----
-
-## CI/CD Pipeline
-
-- **Automated Deployments:**
-    - On every push to the main branch, Render automatically builds and deploys your application.
-    - Optionally, integrate GitHub Actions for additional pre-deployment testing or Docker image building.
-- **Version Control:**
-    - Use your GitHub repository for version control and collaboration.
+## **📩 Email Notifications**
+✅ **Users receive automated email notifications for:**
+- **New Vendor Ratings** → Vendors are notified when customers leave reviews.
+- **Product Updates** → Vendors receive updates when their products are modified.
 
 ---
 
-### 6. Video Link
-**Link:** https://youtu.be/Ldb5UkxVfRM
+## **🌍 Multi-Language Support**
+✅ **Django Translation System (gettext) Integrated**  
+✅ **Users can switch languages dynamically**  
+✅ **Supports English, French, Spanish, Swahili, and Kinyarwanda**  
 
 ---
 
-### 7. Designs
-**Link:** https://github.com/uwaseedith/Bazaprix/tree/main/Designs
+## **🤖 AI-Powered Price Insights**
+✅ **Automated price predictions using AI models**  
+✅ **Suggests price trends based on historical data**  
+✅ **Provides smart recommendations for competitive pricing**  
 
 ---
 
 
-### 8. Schemas
-**Link:** https://drive.google.com/file/d/1-fZaI5ahMmED7v8itQ1KiJrBrYmIAjMH/view?usp=sharing
+## **🚀 GitHub Repository**
+🔗 **BazaPrix GitHub Repo**: [BazaPrix Repository](https://github.com/uwaseedith/Bazaprix)
 
 ---
 
 
-### 9. Github Link
-**Link:** https://github.com/uwaseedith/Bazaprix
+## **🎨 Figma UI Design**
+🔗 **Figma Link**: [BazaPrix UI Design](https://www.figma.com/design/SQBQLhZn1FqcaLMGmaSBX9/BazaPrix?node-id=1-144&t=uG6fU1Tj0tx0VBjg-0)
 
 ---
+
+## **🌍 Live Deployment**
+🔗 **BazaPrix on Render**: [Live Site](https://bazaprix.onrender.com)
+
+---
+
+## **🎥 Demo Video**
+🔗 **Initial Demo**: [YouTube Link](https://youtu.be/Ldb5UkxVfRM)  
+🔗 **Final Product Demo**: [YouTube Link](https://www.youtube.com)
+
+---
+
+## **🤝 Contribution Guidelines**
+1️⃣ Fork the repository.  
+2️⃣ Create a new branch (`feature-branch-name`).  
+3️⃣ Commit your changes (`git commit -m "Added new feature"`).  
+4️⃣ Push to GitHub (`git push origin feature-branch-name`).  
+5️⃣ Create a pull request.  
+
+---
+
+## **🎉 Enjoy Shopping with BazaPrix! 🚀🔥**  
+
+Let me know if you want to modify anything! 🚀💯
