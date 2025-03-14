@@ -475,7 +475,7 @@ def rate_vendor(request, vendor_id):
             message = f"You have received new feedback:\n\nRating: {rating}/5\nComment: {comment}"
 
             # Assuming you want to notify the vendor's email
-            send_notification_email(vendor.user.email, subject, message)
+            
 
             return redirect('vendor_profile')
     else:
@@ -1424,3 +1424,33 @@ def vdelete_suggested_price(request, price_id):
     price.delete()
     messages.success(request, f"✅ Suggested price for {price.product_name} has been deleted.")
     return HttpResponseRedirect(reverse('vsuggested_price_list'))
+
+
+def basecategory_products(request, category_name):
+    # Get the category object based on the name passed in the URL
+    category = get_object_or_404(Category, name=category_name)
+    
+    # Fetch products that belong to this category
+    products = Product.objects.filter(category=category)
+    ai_products = AIProduct.objects.filter(category=category)
+
+    # ✅ Add an `is_ai_product` flag
+    all_products = [
+        {"product": p, "is_ai_product": False} for p in products
+    ] + [
+        {"product": p, "is_ai_product": True} for p in ai_products
+    ]
+    
+    # Get the vendor's language preference or default to 'en'
+    language_preference = request.user.language_preference 
+
+    # Activate the language based on the user's preference
+    translation.activate(language_preference)
+
+    context = {
+        'category': category,
+        'products': all_products,  # ✅ Now contains both products and AI products
+        'language_preference': language_preference,
+    }
+    
+    return render(request, 'Baza/basecategory_products.html', context)

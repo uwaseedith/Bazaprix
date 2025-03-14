@@ -1,0 +1,30 @@
+{% extends "Baza/base.html" %}
+{% load custom_filters %}
+{% load static %}
+{% load i18n %}  <!-- ✅ Load translation library -->
+
+{% block content %}
+
+
+
+<h2>{{ category.name|translate:language_preference }} Products</h2>  <!-- ✅ Translates category name -->
+
+<div class="category-cards">
+    {% for item in products %}
+        <div class="card">
+            {% if item.product.image %}
+                <img src="{{ item.product.image.url }}" class="card-img-top" alt="{{ item.product.name|translate:language_preference }}">
+            {% else %}
+                <img src="{% static 'Baza/images/default.jpg' %}" class="card-img-top" alt="{% trans 'No image available' %}">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ item.product.name|translate:language_preference }}</h5>  <!-- ✅ Translates product name -->
+                <p class="card-text">{{ item.product.description|translate:language_preference|truncatewords:10 }}</p>  <!-- ✅ Translates product description -->
+                <p class="card-text"><strong>{% trans 'Price:' %}</strong> {{ item.product.price }} BIF</p>  <!-- ✅ Translates static text "Price:" -->
+            </div>
+        </div>
+    {% empty %}
+        <p>{% trans 'No products available in this category yet.' %}</p>
+    {% endfor %}
+</div>
+{% endblock %}

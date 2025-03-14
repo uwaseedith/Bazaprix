@@ -70,9 +70,9 @@ header {
 
 /* General page content styling */
 main {
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
+    padding: 0px;
+    max-width: 100%;
+    margin: 0px;
 }
 
 /* Footer styling */
@@ -354,7 +354,7 @@ footer {
 
 /* ✅ Full Page Background */
 .homepage-container {
-    background: linear-gradient(to right, #007bff, #6610f2);
+    background: whitesmoke;
     min-height: 100vh;
     padding: 50px 0;
 }

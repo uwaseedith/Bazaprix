@@ -13,22 +13,33 @@
     <a href="{% url 'cgenerate_product' %}" class="btn btn-lg btn-success fw-bold text-white px-5 py-3 shadow">
       <i class="fas fa-magic"></i> {{ "Generate AI Product"|translate:language_preference }}
     </a>
-  </div>
+</div>
   
 <h2>{{ "Product Categories"|translate:language_preference }}</h2>  <!-- Translate "Product Categories" heading -->
+
+<!-- ✅ Loop Through Categories -->
 <div class="category-cards">
     {% for category in categories %}
-        <div class="card">
-            <h3>{{ category.name|translate:language_preference }}</h3>  <!-- Translate category name -->
-            <p>{{ category.description|translate:language_preference }}</p>  <!-- Translate category description -->
-            <!-- Link to category products page -->
-            <div class="card-footer text-center">
-                <a href="{% url 'consumer_category_products' category.name %}" class="btn btn-secondary">{{ "View Products"|translate:language_preference }}</a>  <!-- Translate "View Products" button -->
-            </div>
+    <div class="card">
+        <!-- ✅ Display Category Image -->
+        {% if category.image %}
+            <img src="{{ category.image.url }}" alt="{{ category.name }}" class="card-img-top">
+        {% else %}
+            <img src="{% static 'Baza/images/logo.png.webp' %}" alt="Default Image" class="card-img-top">
+        {% endif %}
+
+        <div class="card-body">
+            <h3>{{ category.name|translate:language_preference }}</h3>
+            <p>{{ category.description|translate:language_preference }}</p>
         </div>
+
+        <div class="card-footer text-center">
+            <a href="{% url 'consumer_category_products' category.name %}" class="btn btn-secondary">
+                {{ "View Products"|translate:language_preference }}
+            </a>
+        </div>
+    </div>
     {% endfor %}
 </div>
-
- 
 
 {% endblock %}

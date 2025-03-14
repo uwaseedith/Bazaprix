@@ -1,0 +1,148 @@
+/* ✅ Hero Section Styling */
+.hero-section {
+    position: relative;
+    width: 100%;
+    height: 500px;  /* Adjust height as needed */
+    background-size: cover;
+    background-position: center;
+    animation: slideshow 20s infinite linear; /* 3 images, 4s each */
+    margin: 0px;
+}
+
+
+/* ✅ Overlay for Better Text Visibility */
+.hero-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Dark overlay for contrast */
+}
+
+/* ✅ Hero Content */
+.hero-content {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    padding: 20px;
+}
+
+/* ✅ Background Slideshow Animation */
+@keyframes slideshow {
+    0%   { background-image: url('../images/bg1.jpg'); }
+    33%  { background-image: url('../images/bg2.jpg'); }
+    66%  { background-image: url('../images/bg3.jpg'); }
+    100% { background-image: url('../images/bg1.jpg'); } /* Loop back */
+}
+
+/* ✅ Fade-In Animation for Smooth Entry */
+.fade-in {
+    animation: fadeInUp 0.5s ease-in-out forwards;
+}
+
+@keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ✅ Responsive Adjustments */
+@media (max-width: 768px) {
+    .hero-section {
+        height: 350px; /* Reduce height for smaller screens */
+    }
+
+    .hero-content h2 {
+        font-size: 2rem;
+    }
+
+    .hero-content p {
+        font-size: 1.2rem;
+    }
+}
+
+/* ✅ Cards Layout */
+.category-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    padding: 20px;
+    margin-top: 30px;
+}
+
+/* ✅ Card Styling */
+.category-cards .card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    /* padding: 25px; */
+    text-align: center;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+/* ✅ Card Image */
+.category-cards .card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+/* ✅ Card Hover Effect */
+.category-cards .card:hover {
+    transform: scale(1.01);
+    box-shadow: 0 8px 16px rgba(255, 255, 255, 0.3);
+}
+
+.card-content {
+    padding-top: 15px;
+}
+
+/* ✅ Button Styling */
+.btn {
+    padding: 12px 20px;
+    font-size: 1.1em;
+    font-weight: bold;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease-in-out;
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #6610f2, #9b59b6);
+    color: white;
+    border: none;
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(135deg, #9b59b6, #6610f2);
+    transform: translateY(-3px);
+}
+
+/* ✅ Responsive Adjustments */
+@media (max-width: 768px) {
+    .category-cards {
+        grid-template-columns: 1fr;
+    }
+}
+
+.ai-section .get-started-section .contact-section {
+    padding: 0px 25px 0px 25px;
+
+}
+
+main {
+    margin: auto;
+    padding: 0;
+    max-width: 100%
+}
+
+h3 {
+    padding-top: 30px;
+}

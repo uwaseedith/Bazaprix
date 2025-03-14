@@ -70,9 +70,9 @@ header {
 
 /* General page content styling */
 main {
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
+    padding: 0px;
+    max-width: 100%;
+    margin: 0px;
 }
 
 /* Footer styling */
@@ -359,7 +359,7 @@ footer {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 50px 20px;
+    padding: 0px;
     text-align: center;
 }
 
@@ -472,7 +472,7 @@ h3 {
 }
 
 /* ✅ Responsive Adjustments */
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
     .homepage-container {
         padding: 30px 15px;
     }
@@ -493,4 +493,4 @@ h3 {
         font-size: 1em;
         padding: 10px 15px;
     }
-}
+} */

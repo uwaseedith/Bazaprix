@@ -3,82 +3,95 @@
 {% load static %}
 
 {% block content %}
+
 <!-- ✅ Background & Main Container -->
-<div class="homepage-container">
-  <div class="container text-center">
-    <!-- ✅ Animated Title -->
-    <h2 class="display-3 text-light fw-bold fade-in">
-      {{ "Welcome to BazaPrix!"|translate:language_preference }}
-    </h2>
-    <p class="lead text-light fade-in">
-      {{ "Your one-stop platform for comparing prices on essential goods."|translate:language_preference }}
-    </p>
-
-    <!-- ✅ Popular Categories Section -->
-    <section class="fade-in">
-      <h3 class="text-light">{{ "Popular Categories 🛍️" | translate:language_preference }}</h3>
-      <div class="category-cards">
-        <div class="card animated-card">
-          <h4>{{ "Food 🍔🍔🍔" | translate:language_preference }}</h4>
-          <p>{{ "Compare the best prices on food items from trusted vendors." | translate:language_preference }}</p>
-          <a href="{% url 'signup' %}" class="btn btn-secondary">
-            {{ "Explore Food Products 🥗🥗🥗" | translate:language_preference }}
-          </a>
-        </div>
-        <div class="card animated-card">
-          <h4>{{ "Electronics 📱" | translate:language_preference }}</h4>
-          <p>{{ "Find the best deals on electronics, gadgets, and accessories💻." | translate:language_preference }}</p>
-          <a href="{% url 'signup' %}" class="btn btn-secondary">
-            {{ "Explore Electronics 💻📱🎧" | translate:language_preference }}
-          </a>
-        </div>
-        <div class="card animated-card">
-          <h4>{{ "Health & Beauty💅💅" | translate:language_preference }}</h4>
-          <p>{{ "Discover affordable health and beauty products to enhance your lifestyle💅💅💖." | translate:language_preference }}</p>
-          <a href="{% url 'signup' %}" class="btn btn-secondary">
-            {{ "Explore Health & Beauty💅💖🧴" | translate:language_preference }}
-          </a>
-        </div>
+<main class="main">
+  <div>
+    <!-- ✅ Hero Section with Background Slideshow -->
+    <div class="hero-section">
+      <div class="hero-overlay"></div> <!-- Dark overlay for better text contrast -->
+      <div class="hero-content">
+        <h2 class="display-3 text-light fw-bold fade-in">
+          {{ "Welcome to BazaPrix!"|translate:language_preference }}
+        </h2>
+        <p class="lead text-light fade-in">
+          {{ "Your one-stop platform for comparing prices on essential goods."|translate:language_preference }}
+        </p>
       </div>
-    </section>
+    </div>
+    <div class="">
+      <div class="container text-center">
+        <!-- ✅ Popular Categories Section -->
+        <section class="fade-in">
+          <h3>{{ "Popular Categories 🛍️" | translate:language_preference }}</h3>
+          <div class="category-cards">
 
-    <!-- ✅ AI-Powered Price Insights -->
-    <section class="fade-in">
-      <h3 class="text-light">{{ "AI-Powered Price Insights! 🤖" | translate:language_preference }}</h3>
-      <div class="category-cards">
-        <div class="card animated-card">
-          <h4>{{ "Price Trends" | translate:language_preference }}</h4>
+            <!-- ✅ Food Category -->
+            <div class="card animated-card">
+              <img src="{% static 'Baza/images/food.jpg' %}" alt="Food">
+              <h4 class="card-content">{{ "Food 🍔" | translate:language_preference }}</h4>
+              <p class="card-content">{{ "Compare the best prices on food items from trusted vendors." | translate:language_preference }}</p>
+              <a href="{% url 'basecategory_products' category_name='food' %}" class="btn btn-secondary card-container">
+                {{ "Explore Food Products" | translate:language_preference }}
+              </a>
+            </div>
+
+            <!-- ✅ Electronics Category -->
+            <div class="card animated-card">
+              <img src="{% static 'Baza/images/electronics.jpg' %}" alt="Electronics">
+              <h4 class="card-content">{{ "Electronics 📱" | translate:language_preference }}</h4>
+              <p class="card-content">{{ "Find the best deals on electronics, gadgets, and accessories." | translate:language_preference }}</p>
+              <a href="{% url 'basecategory_products' category_name='electronics' %}" class="btn btn-secondary card-container">
+                {{ "Explore Electronics" | translate:language_preference }}
+              </a>
+            </div>
+
+            <!-- ✅ Health & Beauty Category -->
+            <div class="card animated-card">
+              <img src="{% static 'Baza/images/health_beauty.jpg' %}" alt="Health & Beauty">
+              <h4 class="card-content">{{ "Health & Beauty 💅" | translate:language_preference }}</h4>
+              <p class="card-content">{{ "Discover affordable health and beauty products to enhance your lifestyle." | translate:language_preference }}</p>
+              <a href="{% url 'basecategory_products' category_name='health_beauty'%}" class="btn btn-secondary card-container">
+                {{ "Explore Health & Beauty" | translate:language_preference }}
+              </a>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ✅ AI-Powered Price Insights -->
+        <section class="fade-in ai-section">
+          <h3>{{ "AI-Powered Price Insights! 🤖" | translate:language_preference }}</h3>
           <p>{{ "Discover real-time price trends, suggested pricing, and insights for smarter shopping decisions!" | translate:language_preference }}</p>
           <a href="{% url 'signup' %}" class="btn btn-secondary">
-            {{ "Explore AI-Powered Price Insights! 🤖" | translate:language_preference }}
+            {{ "Explore AI-Powered Price Insights" | translate:language_preference }}
           </a>
-        </div>
+        </section>
+
+        <!-- ✅ Get Started Section -->
+        <section class="fade-in get-started-section">
+          <h3>{{ "Get Started 🚀" | translate:language_preference }}</h3>
+          <p>{{ "Ready to start saving? Sign up to track prices, compare products, and receive alerts!" | translate:language_preference }}</p>
+          <a href="{% url 'signup' %}" class="btn-lg btn btn-secondary">
+            {{ "Sign Up" | translate:language_preference }}
+          </a>
+          <a href="{% url 'login' %}" class="btn-lg btn btn-secondary">
+            {{ "Login" | translate:language_preference }}
+          </a>
+        </section>
+
+        <!-- ✅ Contact Support Section -->
+        <section class="fade-in contact-section">
+          <h3>{{ "Need Help? 💬" | translate:language_preference }}</h3>
+          <p>{{ "Our support team is here to assist you with any questions or concerns." | translate:language_preference }}</p>
+          <a href="{% url 'contact_us' %}" class="btn btn-lg btn-secondary">
+            {{ "Contact Support" | translate:language_preference }}
+          </a>
+        </section>
+
       </div>
-    </section>
-
-    <!-- ✅ Get Started Section -->
-    <section class="fade-in">
-      <h3 class="text-light">{{ "Get Started🚀" | translate:language_preference }}</h3>
-      <p class="text-light">{{ "Ready to start saving? Sign up to track prices, compare products, and receive alerts🔔🔔!" | translate:language_preference }}</p>
-      <p>
-        <a href="{% url 'signup' %}" class="btn btn-lg btn-primary shadow-lg">
-          {{ "Sign Up📝" | translate:language_preference }}
-        </a> 
-        <a href="{% url 'login' %}" class="btn btn-lg btn-primary shadow-lg">
-          {{ "Login🔑" | translate:language_preference }}
-        </a>
-      </p>
-    </section>
-
-    <!-- ✅ Contact Support Section -->
-    <section class="fade-in">
-      <h3 class="text-light">{{ "Need Help?💬" | translate:language_preference }}</h3>
-      <p class="text-light">{{ "Our support team is here to assist you with any questions or concerns📞." | translate:language_preference }}</p>
-      <a href="{% url 'contact_us' %}" class="btn btn-lg btn-primary shadow-lg">
-        {{ "Contact Support" | translate:language_preference }}
-      </a>
-    </section>
+    </div>
   </div>
-</div>
+</main>
 
 {% endblock %}

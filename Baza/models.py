@@ -44,6 +44,7 @@ class Category(models.Model):
         ('industrial_scientific', 'Industrial & Scientific'),
     ]
     name = models.CharField(max_length=100, choices=CATEGORY_CHOICES)
+    image = models.ImageField(upload_to='products/', blank=True, null=True)
     description = models.TextField()
 
     def __str__(self):
