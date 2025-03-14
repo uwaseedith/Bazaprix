@@ -18,7 +18,7 @@
 ✅ **Secure Payment Integration** (For premium vendor features)  
 ✅ **Responsive & Interactive UI** (Modern frontend with Bootstrap)  
 ✅ **Deployed on Render** (Auto-deployments from GitHub)  
-✅ **SQLite/PostgreSQL Database** (Depending on deployment)  
+✅ **SQLite Database** (Depending on deployment)  
 
 ---
 
