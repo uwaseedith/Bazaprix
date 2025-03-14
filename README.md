@@ -18,7 +18,7 @@
 ✅ **Secure Payment Integration** (For premium vendor features)  
 ✅ **Responsive & Interactive UI** (Modern frontend with Bootstrap)  
 ✅ **Deployed on Render** (Auto-deployments from GitHub)  
-✅ **SQLite Database** (Depending on deployment)  
+✅ **SQLite/PostgreSQL Database** (Depending on deployment)  
 
 ---
 
@@ -149,10 +149,6 @@ python manage.py runserver
 🔗 **Figma Link**: [BazaPrix UI Design](https://www.figma.com/design/SQBQLhZn1FqcaLMGmaSBX9/BazaPrix?node-id=1-144&t=uG6fU1Tj0tx0VBjg-0)
 
 ---
-## **🎨 Diagrams**
-🔗 **Diagrams link**: [BazaPrix Diagrams](https://drive.google.com/file/d/1vUq1JGCHFM2zy-T1RFhTflj9Hu63bKGO/view?usp=sharing)
-
----
 
 ## **🌍 Live Deployment**
 🔗 **BazaPrix on Render**: [Live Site](https://bazaprix.onrender.com)
@@ -161,7 +157,7 @@ python manage.py runserver
 
 ## **🎥 Demo Video**
 🔗 **Initial Demo**: [YouTube Link](https://youtu.be/Ldb5UkxVfRM)  
-🔗 **Final Product Demo**: [YouTube Link](https://www.youtube.com)
+🔗 **Final Product Demo**: [YouTube Link](https://youtu.be/fbyY9DIL6wM)
 
 ---
 
