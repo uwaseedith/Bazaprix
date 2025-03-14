@@ -1441,16 +1441,20 @@ def basecategory_products(request, category_name):
         {"product": p, "is_ai_product": True} for p in ai_products
     ]
     
-    # Get the vendor's language preference or default to 'en'
-    language_preference = request.user.language_preference 
+    # ✅ Fix: Use session-based language for anonymous users
+    if request.user.is_authenticated and hasattr(request.user, 'vendor'):
+        user_language = request.user.vendor.language_preference
+    else:
+        # Use session-based language preference or default to English ('en')
+        user_language = request.session.get('language_preference', 'en')
 
-    # Activate the language based on the user's preference
-    translation.activate(language_preference)
+    # Activate the language preference
+    translation.activate(user_language)
 
     context = {
         'category': category,
-        'products': all_products,  # ✅ Now contains both products and AI products
-        'language_preference': language_preference,
+        'products': all_products,  # ✅ Now contains both regular & AI products
+        'language_preference': user_language,  # ✅ Pass to the template
     }
     
     return render(request, 'Baza/basecategory_products.html', context)
