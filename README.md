@@ -1,4 +1,3 @@
-
 # **BazaPrix 🛍️**  
 
 📌 **Overview**  
@@ -15,10 +14,29 @@
 ✅ **Multilingual Support** (Translate content dynamically)  
 ✅ **AI-Generated Products** (AI suggests new products based on trends)  
 ✅ **Email Notifications** (Vendors receive automated emails for new ratings & product updates)  
-✅ **Secure Payment Integration** (For premium vendor features)  
 ✅ **Responsive & Interactive UI** (Modern frontend with Bootstrap)  
 ✅ **Deployed on Render** (Auto-deployments from GitHub)  
-✅ **SQLite Database** (Depending on deployment)  
+✅ **SQLite Database** (For local development) 
+
+---
+
+## **📂 Project Structure**
+```
+BazaPrix/
+│── Baza/                # Django Backend Project
+│── BazaPrix/            # Main Django Application
+│── Designs/             # UI/UX Design Files
+│── env/                 # Virtual Environment (Not in Repo)
+│── locale/              # Multilingual Translations
+│── media/               # Uploaded Media Files
+│── staticfiles/         # Static Files for Deployment
+│── db.sqlite3           # SQLite Database (Local Development)
+│── manage.py            # Django Command Line Utility
+│── build.sh             # Deployment Script for Render
+│── render.yaml          # Render Deployment Configuration
+│── README.md            # Project Documentation
+│── requirements.txt      # Python Dependencies
+```
 
 ---
 
@@ -32,9 +50,9 @@ cd BazaPrix
 
 ### **2️⃣ Set Up Virtual Environment**
 ```bash
-python -m venv myenv
-source myenv/bin/activate  # For Linux/macOS
-myenv\Scripts\activate  # For Windows
+python -m venv env
+source env/bin/activate  # For Linux/macOS
+env\Scripts\activate  # For Windows
 ```
 
 ### **3️⃣ Install Dependencies**
@@ -139,11 +157,9 @@ python manage.py runserver
 
 ---
 
-
 ## **🚀 GitHub Repository**
-🔗 **BazaPrix GitHub Repo**: [BazaPrix Repository](https://github.com/uwaseedith/Bazaprix) 
+🔗 **BazaPrix GitHub Repo**: [BazaPrix Repository](https://github.com/uwaseedith/Bazaprix)  
 ---
-
 
 ## **🎨 Figma UI Design**
 🔗 **Figma Link**: [BazaPrix UI Design](https://www.figma.com/design/SQBQLhZn1FqcaLMGmaSBX9/BazaPrix?node-id=1-144&t=uG6fU1Tj0tx0VBjg-0)
@@ -170,4 +186,4 @@ python manage.py runserver
 
 ---
 
-## **🎉 Enjoy Shopping with BazaPrix! 🔥**  
+## **🎉 Enjoy Shopping with BazaPrix! 🔥**
