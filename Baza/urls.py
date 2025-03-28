@@ -65,6 +65,8 @@ urlpatterns = [
     path('vsuggested-price-list/', views.vsuggested_price_list, name='vsuggested_price_list'),
     path('delete-suggested-price/<int:price_id>/', views.delete_suggested_price, name='delete_suggested_price'),
     path('vdelete-suggested-price/<int:price_id>/', views.delete_suggested_price, name='vdelete_suggested_price'),
+    path('translation-status/<str:task_id>/', views.translation_status, name='translation_status'),
+
 
 
 

@@ -8,13 +8,14 @@
     <h2>{{ "Profile Settings"|translate:language_preference }}</h2>
 
     <!-- Display Messages -->
-    {% if messages %}
-    <div class="alert alert-info">
-        {% for message in messages %}
-        <p>{{ message |translate:language_preference }}</p>
-        {% endfor %}
-    </div>
-    {% endif %}
+{% if messages %}
+<div class="alert alert-info">
+    {% for message in messages %}
+        <p>{{ message.message|translate:language_preference }}</p>
+    {% endfor %}
+</div>
+{% endif %}
+
 
     <form method="POST">
         {% csrf_token %}

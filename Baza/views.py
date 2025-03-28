@@ -22,6 +22,17 @@ from django.core.files.base import ContentFile
 import re
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.views import View
+import aiohttp
+from django.http import JsonResponse
+from django.core.cache import cache
+import requests
+import hashlib
+import logging
+import time
+from celery.result import AsyncResult
+
+logger = logging.getLogger(__name__)
 
 
 @login_required
@@ -71,11 +82,13 @@ def product_detail(request, product_id):
     
     # Translate product description based on language preference
     translated_description = translate_text(product.description, language_preference)
+    task = translate_text.delay(product.description, language_preference)
 
     context = {
         'product': product,
         'language_preference': language_preference,  # Pass language preference to the template
-        'translated_description': translated_description,  # Add the translated description
+        'translated_description': translated_description, 
+        'task_id': task.id, # Add the translated description
     }
 
     return render(request, 'Baza/product_detail.html', context)
@@ -1458,3 +1471,68 @@ def basecategory_products(request, category_name):
     }
     
     return render(request, 'Baza/basecategory_products.html', context)
+
+def get_api_data(url):
+    cached_response = cache.get(url)
+    if cached_response:
+        return cached_response
+
+    response = requests.get(url)
+    if response.status_code == 200:
+        cache.set(url, response.json(), timeout=60 * 60)  # Cache for 1 hour
+        return response.json()
+    return None
+
+class CachedAsyncAPIView(View):
+    async def get(self, request):
+        url = 'https://free-api-url.com/api'
+        
+        # Generate cache key
+        cache_key = hashlib.md5(url.encode()).hexdigest()
+        cached_data = cache.get(cache_key)
+
+        if cached_data:
+            # Return cached response immediately
+            return JsonResponse(cached_data)
+
+        # Else, fetch data asynchronously
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                data = await response.json()
+                cache.set(cache_key, data, timeout=3600)  # cache for 1 hour
+
+        return JsonResponse(data)
+    
+class DebugAsyncAPIView(View):
+    async def get(self, request):
+        start_time = time.time()
+
+        url = 'https://free-api-url.com/api'
+        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=10)) as session:
+            async with session.get(url) as response:
+                data = await response.json()
+
+        end_time = time.time()
+        logger.warning(f"API request duration: {end_time - start_time:.2f}s")
+
+        return JsonResponse(data)
+    
+import time
+
+def my_view(request):
+    start_time = time.time()
+
+    # Your view logic here
+    ...
+
+    duration = time.time() - start_time
+    print(f"View took {duration:.2f} seconds to load")
+    
+    return render(request, 'template.html')
+
+def translation_status(request, task_id):
+    task_result = AsyncResult(task_id)
+    if task_result.ready():
+        return JsonResponse({"status": "completed", "result": task_result.result})
+    else:
+        return JsonResponse({"status": "pending"})

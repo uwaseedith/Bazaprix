@@ -13,6 +13,10 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
+import logging
+logging.basicConfig(level=logging.INFO)
+logging.info("settings.py/app.py loaded successfully!")
+
 load_dotenv() 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -53,6 +57,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'Baza.middleware.TimingMiddleware',
 ]
 
 ROOT_URLCONF = 'BazaPrix.urls'
@@ -167,3 +172,39 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = f'BazaPrix <{os.environ.get("EMAIL_HOST_USER")}>'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
+
+
+# settings.py
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
+CELERY_BEAT_SCHEDULE = {
+    'daily_pretranslate_task': {
+        'task': 'yourapp.tasks.daily_pretranslate',
+        'schedule': 86400.0,  # every 24 hours
+    },
+}
